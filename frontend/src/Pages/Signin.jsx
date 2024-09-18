@@ -32,7 +32,7 @@ function Signin() {
       });
       
       //navigate when success after 3 seconds
-      setTimeout(()=> navigate('/'),3000)
+      setTimeout(()=> navigate('/'),2000)
       
 
     } catch (error) {
@@ -64,7 +64,7 @@ function Signin() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6 ">
           <div>
             <input
               type="email"
@@ -92,10 +92,14 @@ function Signin() {
           >
             Sign In
           </button>
-          <SignInWithGoogle/>
           
           
         </form>
+        <div className="my-5">
+          <SignInWithGoogle/>
+          </div>
+          
+
 
         <div className="text-center mt-4">
           <p className="text-gray-400">

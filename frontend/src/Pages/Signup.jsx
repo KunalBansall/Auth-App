@@ -19,6 +19,18 @@ function Signup() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if(!formData.username || !formData.password || !formData.email){
+      toast.error('All fields are required.',{
+        position:'top-right',
+        autoClose:4000,
+        hideProgressBar:false,
+        closeOnClick:true,
+        pauseOnHover:true,
+        progress:undefined
+      });
+      return;
+    }
     try {
       const res = await axios.post("http://localhost:5000/sign-up", formData);
       toast.success("User created successfully!", { // Success toast
@@ -31,7 +43,7 @@ function Signup() {
         progress: undefined,
       });
       // navigate("/sign-in"); 
-      setTimeout(()=> navigate('/sign-in'),3000)// Navigate to the sign-in page after successful signup
+      setTimeout(()=> navigate('/sign-in'),2000)// Navigate to the sign-in page after successful signup
     } catch (error) {
       console.error(error);
       toast.error("Failed to create user. Please try again.", { // Error toast
@@ -57,6 +69,7 @@ function Signup() {
               type="text"
               name="username"
               placeholder="Username"
+              required
               id="username"
               onChange={handleChange}
               className="w-full p-3 rounded bg-gray-700 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
@@ -68,6 +81,7 @@ function Signup() {
               name="email"
               placeholder="Email"
               id="email"
+              required
               onChange={handleChange}
               className="w-full p-3 rounded bg-gray-700 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
@@ -77,6 +91,7 @@ function Signup() {
               type="password"
               name="password"
               placeholder="Password"
+              required
               id="password"
               onChange={handleChange}
               className="w-full p-3 rounded bg-gray-700 text-white placeholder-gray-400 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-orange-500"
