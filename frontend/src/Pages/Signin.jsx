@@ -1,7 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function Signin() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -16,11 +17,36 @@ function Signin() {
     try {
       const res = await axios.post("http://localhost:5000/sign-in", formData);
       localStorage.setItem("token", res.data.token);
-      alert("Login Success");
-      navigate("/");
+      
+
+      //Toast on Success
+      toast.success("Login Success",{
+        position:'top-right',
+        autoClose:4000,
+        hideProgressBar:false,
+        closeOnClick:true,
+        pauseOnHover:true,
+        draggable:true,
+        progress:undefined,
+      });
+      
+      //navigate when success after 3 seconds
+      setTimeout(()=> navigate('/'),3000)
+      
+
     } catch (error) {
       console.error(error);
       setErrorMessage("Invalid email or password");
+    
+      toast.error("Login Failed. Please try with correct crendentials",{
+        position:'top-right',
+        autoClose:4000,
+        hideProgressBar:false,
+        closeOnClick:true,
+        pauseOnHover:true,
+        draggable:true,
+        progress:undefined,
+      });
     }
   };
 
@@ -76,6 +102,7 @@ function Signin() {
           </p>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }

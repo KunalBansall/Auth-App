@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom"; // Import useNavigate and Link
+import { toast, ToastContainer } from "react-toastify"; // Import toast functions
+import "react-toastify/dist/ReactToastify.css"; // Import the CSS for toast notifications
 
 function Signup() {
   const [formData, setFormData] = useState({
@@ -19,10 +21,28 @@ function Signup() {
     e.preventDefault();
     try {
       const res = await axios.post("http://localhost:5000/sign-up", formData);
-      alert(res.data);
-      navigate("/sign-in"); // Navigate to the sign-in page after successful signup
+      toast.success("User created successfully!", { // Success toast
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      // navigate("/sign-in"); 
+      setTimeout(()=> navigate('/sign-in'),3000)// Navigate to the sign-in page after successful signup
     } catch (error) {
       console.error(error);
+      toast.error("Failed to create user. Please try again.", { // Error toast
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
   };
 
@@ -80,6 +100,7 @@ function Signup() {
           </p>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 }
