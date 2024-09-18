@@ -1,12 +1,11 @@
 import React from 'react'
+import Header from '../components/Header'
 
 export default function Home() {
   return (
     <div>
-        <h2>
-        HELLO Auth-App
-        </h2>
-        </div>
+       <Header/>
+    </div>
   )
 }
 
