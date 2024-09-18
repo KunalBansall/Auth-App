@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import SignInWithGoogle from "../components/SigninWithGoogle";
 function Signin() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -91,6 +92,9 @@ function Signin() {
           >
             Sign In
           </button>
+          <SignInWithGoogle/>
+          
+          
         </form>
 
         <div className="text-center mt-4">

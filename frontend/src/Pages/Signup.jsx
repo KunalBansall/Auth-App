@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate, Link } from "react-router-dom"; // Import useNavigate and Link
 import { toast, ToastContainer } from "react-toastify"; // Import toast functions
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for toast notifications
-
+import SignInWithGoogle from "../components/SigninWithGoogle";
 function Signup() {
   const [formData, setFormData] = useState({
     username: "",
@@ -89,6 +89,8 @@ function Signup() {
           >
             Sign Up
           </button>
+         < SignInWithGoogle/>
+          
         </form>
 
         <div className="text-center mt-6">
