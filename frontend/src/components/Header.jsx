@@ -18,11 +18,14 @@ export default function Header() {
   }, []);
 
   const handleSignout = () => {
+    const confirmSignout = window.confirm('Are you sure you want to sign out ?')
+    if(confirmSignout){
     localStorage.removeItem("token");
     localStorage.removeItem("avatar");
     setIslogged(false);
     setAvatarUrl('');
     navigate("/sign-in");
+    }
   };
 
   return (
@@ -54,20 +57,16 @@ export default function Header() {
           />
           </Link>
           }
-          {isLoggedin ? (
+          {!isLoggedin &&(
+
+            <Link to={'/sign-in'}>
             <button
-              onClick={handleSignout}
-              className="font-bold bg-red-400 text-white py-2 px-4 rounded-lg hover:bg-red-500 transition"
-            >
-              Sign out  <FontAwesomeIcon icon={faSignOutAlt}  className="gap-2" size="lg" />
-            </button>
-          ) :(
-            <button
-            onClick={handleSignout}
+         
             className="font-bold bg-red-400 text-white py-2 px-4 rounded-lg hover:bg-red-500 transition"
           >
             Sign in
           </button>
+          </Link>
         ) 
           
           }
