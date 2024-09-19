@@ -4,8 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SignInWithGoogle from "../components/SigninWithGoogle";
+import { useAuth } from "../context/AuthContext";
+
 function Signin() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -17,36 +20,34 @@ function Signin() {
     e.preventDefault();
     try {
       const res = await axios.post("http://localhost:5000/sign-in", formData);
-      localStorage.setItem("token", res.data.token);
-      
+      // localStorage.setItem("token", res.data.token);
+      login(res.data.token, res.data.avatar);
 
       //Toast on Success
-      toast.success("Login Success",{
-        position:'top-right',
-        autoClose:4000,
-        hideProgressBar:false,
-        closeOnClick:true,
-        pauseOnHover:true,
-        draggable:true,
-        progress:undefined,
+      toast.success("Login Success", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
       });
-      
-      //navigate when success after 3 seconds
-      setTimeout(()=> navigate('/'),2000)
-      
 
+      //navigate when success after 3 seconds
+      setTimeout(() => navigate("/"), 2000);
     } catch (error) {
       console.error(error);
       setErrorMessage("Invalid email or password");
-    
-      toast.error("Login Failed. Please try with correct crendentials",{
-        position:'top-right',
-        autoClose:4000,
-        hideProgressBar:false,
-        closeOnClick:true,
-        pauseOnHover:true,
-        draggable:true,
-        progress:undefined,
+
+      toast.error("Login Failed. Please try with correct crendentials", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
       });
     }
   };
@@ -92,14 +93,10 @@ function Signin() {
           >
             Sign In
           </button>
-          
-          
         </form>
         <div className="my-5">
-          <SignInWithGoogle/>
-          </div>
-          
-
+          <SignInWithGoogle />
+        </div>
 
         <div className="text-center mt-4">
           <p className="text-gray-400">

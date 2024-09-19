@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { useAuth } from "../context/AuthContext";
 
 export default function Header() {
   const navigate = useNavigate();
+  const { isAuthenticated, avatar } = useAuth();
   const [isLoggedin, setIslogged] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState('');
-  const defaultAvatarUrl = 'https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png'; // A placeholder image
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const defaultAvatarUrl =
+    "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"; // A placeholder image
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -15,16 +16,18 @@ export default function Header() {
 
     setIslogged(!!token);
     setAvatarUrl(storedAvatarUrl || defaultAvatarUrl); // Use a default avatar URL
-  }, []);
+  }, [avatar]);
 
   const handleSignout = () => {
-    const confirmSignout = window.confirm('Are you sure you want to sign out ?')
-    if(confirmSignout){
-    localStorage.removeItem("token");
-    localStorage.removeItem("avatar");
-    setIslogged(false);
-    setAvatarUrl('');
-    navigate("/sign-in");
+    const confirmSignout = window.confirm(
+      "Are you sure you want to sign out ?"
+    );
+    if (confirmSignout) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("avatar");
+      setIslogged(false);
+      setAvatarUrl("");
+      navigate("/sign-in");
     }
   };
 
@@ -48,28 +51,21 @@ export default function Header() {
 
         {/* Right - Sign Out Button & Avatar */}
         <div className="flex items-center gap-4 ">
-          {isLoggedin && 
-          <Link to={'/profile'}>
-          <img
-            src={avatarUrl}
-            alt="User Avatar"
-            className="w-10 h-10 rounded-full"
-          />
-          </Link>
-          }
-          {!isLoggedin &&(
-
-            <Link to={'/sign-in'}>
-            <button
-         
-            className="font-bold bg-red-400 text-white py-2 px-4 rounded-lg hover:bg-red-500 transition"
-          >
-            Sign in
-          </button>
-          </Link>
-        ) 
-          
-          }
+          {isAuthenticated ? (
+            <Link to={"/profile"}>
+              <img
+                src={avatar}
+                alt="User Avatar"
+                className="w-10 h-10 rounded-full"
+              />
+            </Link>
+          ) : (
+            <Link to={"/sign-in"}>
+              <button className="font-bold bg-red-400 text-white py-2 px-4 rounded-lg hover:bg-red-500 transition">
+                Sign in
+              </button>
+            </Link>
+          )}
         </div>
       </div>
     </header>

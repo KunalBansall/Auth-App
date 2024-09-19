@@ -3,9 +3,11 @@ import { signInWithPopup } from "firebase/auth";
 import { toast } from "react-toastify";
 import { auth, provider } from "../firebase.js"; // Ensure this path is correct
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 const SignInWithGoogle = () => {
   const navigate = useNavigate();
+  const {login}= useAuth();
 
   const handleGoogleSignIn = async () => {
     try {
@@ -14,12 +16,11 @@ const SignInWithGoogle = () => {
 
       // Get the user's token and store it
       const token = await user.getIdToken();
-      localStorage.setItem("token", token);
 
       // Store the user's avatar URL in local storage
       const avatar = user.photoURL; // Use correct property name
-      console.log(avatar);
-      localStorage.setItem("avatar", avatar);
+      login(token,avatar);
+
 
       toast.success("Google Sign-In Successful!", {
         position: "top-right",
