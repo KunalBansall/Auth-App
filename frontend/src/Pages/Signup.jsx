@@ -20,20 +20,21 @@ function Signup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if(!formData.username || !formData.password || !formData.email){
-      toast.error('All fields are required.',{
-        position:'top-right',
-        autoClose:4000,
-        hideProgressBar:false,
-        closeOnClick:true,
-        pauseOnHover:true,
-        progress:undefined
+    if (!formData.username || !formData.password || !formData.email) {
+      toast.error("All fields are required.", {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        progress: undefined,
       });
       return;
     }
     try {
       const res = await axios.post("http://localhost:5000/sign-up", formData);
-      toast.success("User created successfully!", { // Success toast
+      toast.success("User created successfully!", {
+        // Success toast
         position: "top-right",
         autoClose: 4000,
         hideProgressBar: false,
@@ -42,11 +43,12 @@ function Signup() {
         draggable: true,
         progress: undefined,
       });
-      // navigate("/sign-in"); 
-      setTimeout(()=> navigate('/sign-in'),2000)// Navigate to the sign-in page after successful signup
+      // navigate("/sign-in");
+      setTimeout(() => navigate("/sign-in"), 2000); // Navigate to the sign-in page after successful signup
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create user. Please try again.", { // Error toast
+      toast.error("Failed to create user. Please try again.", {
+        // Error toast
         position: "top-right",
         autoClose: 4000,
         hideProgressBar: false,
@@ -61,7 +63,9 @@ function Signup() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-slate-950">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h1 className="text-3xl font-bold text-white text-center mb-6">Sign Up</h1>
+        <h1 className="text-3xl font-bold text-white text-center mb-6">
+          Sign Up
+        </h1>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
@@ -104,8 +108,7 @@ function Signup() {
           >
             Sign Up
           </button>
-         < SignInWithGoogle/>
-          
+          <SignInWithGoogle />
         </form>
 
         <div className="text-center mt-6">
