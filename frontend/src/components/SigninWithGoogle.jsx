@@ -6,15 +6,20 @@ import { useNavigate } from "react-router-dom";
 
 const SignInWithGoogle = () => {
   const navigate = useNavigate();
+
   const handleGoogleSignIn = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      console.log(user); // You can use this user info as needed
 
-      // Show success toast
+      // Get the user's token and store it
       const token = await user.getIdToken();
       localStorage.setItem("token", token);
+
+      // Store the user's avatar URL in local storage
+      const avatar = user.photoURL; // Use correct property name
+      console.log(avatar);
+      localStorage.setItem("avatar", avatar);
 
       toast.success("Google Sign-In Successful!", {
         position: "top-right",
@@ -26,8 +31,6 @@ const SignInWithGoogle = () => {
       });
 
       setTimeout(() => navigate("/"), 3000);
-
-      // Redirect or do something with the signed-in user info
     } catch (error) {
       console.error("Error signing in with Google: ", error);
       toast.error("Google Sign-In Failed! Please try again.", {
