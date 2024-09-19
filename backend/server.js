@@ -11,7 +11,8 @@ app.use(cors());
 app.use(express.json());
 
 mongoose
-  .connect(process.env.MONGO)
+  .connect(process.env.MONGO, {
+  })
   .then(() => console.log("MongoDB is Connected Succesfully"))
   .catch((err) => console.error(err));
 

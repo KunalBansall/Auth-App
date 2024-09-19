@@ -6,12 +6,13 @@ export default function Header() {
   const [isLoggedin, setIslogged] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) {
-      setIslogged(true);
-    }
-    if (!token) {
-      setIslogged(false);
-    }
+    // if (token) {
+    //   setIslogged(true);
+    // }
+    // if (!token) {
+    //   setIslogged(false);
+    // }
+    setIslogged(!!token)
   }, []);
 
   const handleSignout = () => {
