@@ -48,6 +48,15 @@ app.post("/sign-in", async (req, res) => {
   res.json({ token });
 });
 
+// Add this line after your middleware setup
+app.use(express.static(path.join(__dirname, '../frontend/dist')));
+
+// Add this route to serve the frontend
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+});
+
+
 app.listen(5000, () => {
   console.log("Server running on port 5000");
 });
