@@ -1,20 +1,21 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Signup from "./Pages/Signup";
-import Signin from "./Pages/Signin"
+import Signin from "./Pages/Signin";
 import Home from "./Pages/Home";
 import Header from "./components/Header";
 import Profile from "./Pages/Profile";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
     <Router>
-    <Header/>
-   
+      <Header />
       <Routes>
         <Route path="/sign-up" element={<Signup />} />
         <Route path="/sign-in" element={<Signin />} />
         <Route path="/" element={<Home />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} /> {/* Protect the Profile route */}
+     
       </Routes>
     </Router>
   );

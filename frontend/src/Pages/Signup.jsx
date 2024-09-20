@@ -110,9 +110,10 @@ function Signup() {
           >
             Sign Up
           </button>
-          <SignInWithGoogle />
         </form>
-
+        <div className="py-5">
+          <SignInWithGoogle />
+          </div>
         <div className="text-center mt-6">
           <p className="text-gray-400">
             Already have an account?{" "}

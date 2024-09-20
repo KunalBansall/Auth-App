@@ -1,4 +1,4 @@
-import React, { Children, createContext, useContext, useState } from "react";
+import React, { Children, createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 const defaultAvatarUrl =
@@ -8,6 +8,15 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const [avatar, setAvatar] = useState("");
+
+  useEffect(()=>{
+    const token = localStorage.getItem('token');
+    const storedAvatar = localStorage.getItem('avatar');
+    if(token){
+      setIsAuthenticated(true);
+      setAvatar(storedAvatar||defaultAvatarUrl);
+    }
+  },[])
 
   const login = (token, avatar) => {
     localStorage.setItem("token", token);
