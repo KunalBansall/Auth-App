@@ -4,6 +4,8 @@ import { useNavigate, Link } from "react-router-dom"; // Import useNavigate and 
 import { toast, ToastContainer } from "react-toastify"; // Import toast functions
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for toast notifications
 import SignInWithGoogle from "../components/SigninWithGoogle";
+
+const API_URL = "https://auth-app-main-4bam.onrender.com";
 function Signup() {
   const [formData, setFormData] = useState({
     username: "",
@@ -32,7 +34,7 @@ function Signup() {
       return;
     }
     try {
-      const res = await axios.post("http://localhost:5000/sign-up", formData);
+      const res = await axios.post(`${API_URL}/sign-up`, formData);
       toast.success("User created successfully!", {
         // Success toast
         position: "top-right",

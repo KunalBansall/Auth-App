@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import SignInWithGoogle from "../components/SigninWithGoogle";
 import { useAuth } from "../context/AuthContext";
 
+const API_URL = "https://auth-app-main-4bam.onrender.com";
+
 function Signin() {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -19,7 +21,7 @@ function Signin() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5000/sign-in", formData);
+      const res = await axios.post(`${API_URL}/sign-in`, formData);
       // localStorage.setItem("token", res.data.token);
       login(res.data.token, res.data.avatar);
 
