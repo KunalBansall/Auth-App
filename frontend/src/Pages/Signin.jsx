@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import SignInWithGoogle from "../components/SigninWithGoogle";
 import { useAuth } from "../context/AuthContext";
 
-const API_URL = "https://auth-app-main-4bam.onrender.com";
+const API_URL = "https://auth-app-main-4bam.onrender.com/auth";
 
 function Signin() {
   const navigate = useNavigate();
