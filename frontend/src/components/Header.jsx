@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import Chat from "./Chat"; // Import the Chat component
 
 export default function Header() {
   const navigate = useNavigate();
   const { isAuthenticated, avatar } = useAuth();
   const [isLoggedin, setIslogged] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [showChat, setShowChat] = useState(false); // State to show/hide chat
+
   const defaultAvatarUrl =
     "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"; // A placeholder image
 
@@ -17,6 +20,7 @@ export default function Header() {
     setIslogged(!!token);
     setAvatarUrl(storedAvatarUrl || defaultAvatarUrl); // Use a default avatar URL
   }, [avatar]);
+
 
   const handleSignout = () => {
     const confirmSignout = window.confirm(
@@ -32,7 +36,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gradient-to-r from-blue-900 via-red-300 to-green-800  shadow-lg">
+    <header className="bg-gradient-to-r from-blue-900 via-red-300 to-green-800 shadow-lg">
       <div className="flex justify-between items-center max-w-6xl mx-auto p-4">
         {/* Left - App Name */}
         <Link to="/">
@@ -51,21 +55,27 @@ export default function Header() {
 
         {/* Right - Sign Out Button & Avatar */}
         <div className="flex items-center gap-4">
-          {isAuthenticated ? (
-            <Link to={"/profile"}>
-              <img
-                src={avatar || avatarUrl}
-                alt="User Avatar"
-                className="w-10 h-10 rounded-full"
-              />
-            </Link>
+          {isAuthenticated|| isLoggedin ? (
+          
+              <Link to="/profile">
+                <img
+                  src={avatar || avatarUrl}
+                  alt="User Avatar"
+                  className="w-10 h-10 rounded-full"
+                />
+              </Link>
+            
           ) : (
-            <Link to={"/sign-in"}>
+            <Link to="/sign-in">
               <button className="font-bold bg-yellow-400 text-white py-2 px-4 rounded-lg hover:bg-yellow-500 transition outline ">
                 Sign in
               </button>
             </Link>
           )}
+
+
+
+
         </div>
       </div>
     </header>

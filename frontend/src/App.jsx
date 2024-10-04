@@ -5,6 +5,8 @@ import Home from "./Pages/Home";
 import Header from "./components/Header";
 import Profile from "./Pages/Profile";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Chat from "./components/Chat";
+
 
 function App() {
   return (
@@ -14,6 +16,7 @@ function App() {
         <Route path="/sign-up" element={<Signup />} />
         <Route path="/sign-in" element={<Signin />} />
         <Route path="/" element={<Home />} />
+        <Route path="/chat/:userId" element={<Chat/>} />
         <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} /> {/* Protect the Profile route */}
      
       </Routes>

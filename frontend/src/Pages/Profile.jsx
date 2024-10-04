@@ -5,20 +5,34 @@ import { useAuth } from "../context/AuthContext";
 export default function Profile() {
   const [avatar, setAvatar] = useState("");
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+
+  // Log user object for debugging
+  console.log(user);
 
   const handleSignout = () => {
     const ConfirmSignout = window.confirm("Are you sure you wanna sign out?");
     if (ConfirmSignout) {
       logout();
-      // Redirect to the sign-in page
       navigate("/sign-in");
     }
   };
 
   return (
     <div className="bg-gray-400 flex items-center justify-center min-h-screen">
-      <div className="bg-gray-600">
+      <div>
+        {/* Render username */}
+        <h1>{user && user.username ? user.username : "User"}</h1>
+
+        {/* Render avatar if available */}
+        <img 
+          src={user && user.avatar ? user.avatar : "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"} 
+          alt="User Avatar"
+          className="rounded-full w-32 h-32 mt-4"
+        />
+      </div>
+
+      <div className="bg-gray-600 mt-4">
         <button onClick={handleSignout}>Sign Out</button>
       </div>
     </div>

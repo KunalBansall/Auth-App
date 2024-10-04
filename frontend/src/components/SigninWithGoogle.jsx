@@ -7,7 +7,7 @@ import { useAuth } from "../context/AuthContext.jsx";
 
 const SignInWithGoogle = () => {
   const navigate = useNavigate();
-  const {login}= useAuth();
+  const { login } = useAuth();
 
   const handleGoogleSignIn = async () => {
     try {
@@ -19,8 +19,7 @@ const SignInWithGoogle = () => {
 
       // Store the user's avatar URL in local storage
       const avatar = user.photoURL; // Use correct property name
-      login(token,avatar);
-
+      login(token, avatar);
 
       toast.success("Google Sign-In Successful!", {
         position: "top-right",
