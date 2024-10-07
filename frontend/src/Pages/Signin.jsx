@@ -6,7 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import SignInWithGoogle from "../components/SigninWithGoogle";
 import { useAuth } from "../context/AuthContext";
 
-const API_URL = "https://auth-app-main-4bam.onrender.com/auth";
+const API_URL = "https://auth-app-main-4bam.onrender.com/auth" ;
+// const API_URL = "http://localhost:5000/auth";
 
 function Signin() {
   const navigate = useNavigate();
@@ -37,12 +38,19 @@ function Signin() {
       });
 
       //navigate when success after 3 seconds
-      setTimeout(() => navigate("/"), 2000);
+      setTimeout(() => navigate("/"), 1000);
     } catch (error) {
       console.error(error);
-      setErrorMessage("Invalid email or password");
+      // setErrorMessage("Invalid email or password");
+      const errorMessage =
+        error.response?.data?.message ||
+        error.response?.data ||
+        "Something went wrong. Please try again.";
 
-      toast.error("Login Failed. Please try with correct crendentials", {
+      setErrorMessage(errorMessage);
+
+      // toast.error("Login Failed. Please try with correct crendentials", {
+      toast.error(errorMessage, {
         position: "top-right",
         autoClose: 4000,
         hideProgressBar: false,

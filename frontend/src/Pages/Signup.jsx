@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css"; // Import the CSS for toast noti
 import SignInWithGoogle from "../components/SigninWithGoogle";
 
 const API_URL = "https://auth-app-main-4bam.onrender.com/auth";
+// const API_URL = "http://localhost:5000/auth";
+
 function Signup() {
   const [formData, setFormData] = useState({
     username: "",
@@ -35,7 +37,7 @@ function Signup() {
     }
     try {
       const res = await axios.post(`${API_URL}/sign-up`, formData);
-      toast.success("User created successfully!", {
+      toast.success(res.data.message || "User created successfully!", {
         // Success toast
         position: "top-right",
         autoClose: 4000,
@@ -46,19 +48,38 @@ function Signup() {
         progress: undefined,
       });
       // navigate("/sign-in");
-      setTimeout(() => navigate("/sign-in"), 2000); // Navigate to the sign-in page after successful signup
+      setTimeout(() => navigate("/sign-in"), 1000); // Navigate to the sign-in page after successful signup
     } catch (error) {
       console.error(error);
-      toast.error("Failed to create user. Please try again.", {
-        // Error toast
-        position: "top-right",
-        autoClose: 4000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      const errorMessage =
+        error.response.data.message ||
+        "Failed to create user. Please try again";
+      if (
+        error.response.status &&
+        error.response.status === 400 &&
+        error.response.data === "User already exists"
+      ) {
+        toast.error(errorMessage, {
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      } else {
+        toast.error(errorMessage, {
+          // Error toast
+          position: "top-right",
+          autoClose: 4000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      }
     }
   };
 
@@ -113,7 +134,7 @@ function Signup() {
         </form>
         <div className="py-5">
           <SignInWithGoogle />
-          </div>
+        </div>
         <div className="text-center mt-6">
           <p className="text-gray-400">
             Already have an account?{" "}

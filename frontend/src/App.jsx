@@ -15,7 +15,7 @@ function App() {
       <Routes>
         <Route path="/sign-up" element={<Signup />} />
         <Route path="/sign-in" element={<Signin />} />
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<ProtectedRoute element={<Home/>}/>} />
         <Route path="/chat/:userId" element={<Chat/>} />
         <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} /> {/* Protect the Profile route */}
      

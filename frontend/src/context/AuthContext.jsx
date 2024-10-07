@@ -58,6 +58,7 @@ export const AuthProvider = ({ children }) => {
 
     // Fetch user data after login
     fetchUserData(token);
+    setUser(currentUser);
   };
 
   const fetchUserData = (token) => {
