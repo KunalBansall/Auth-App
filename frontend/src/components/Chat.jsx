@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import { useAuth } from "../context/AuthContext";
 import { useParams } from "react-router-dom";
+import axios from "axios";
 
 const socket = io("http://localhost:5000", {
   reconnectionAttempts: 5,
@@ -13,10 +14,25 @@ const Chat = () => {
   const { isAuthenticated, user } = useAuth();
   const [message, setMessage] = useState("");
   const [chatHistory, setChatHistory] = useState([]);
+  const [chatUser, setChatUser] = useState(null);
   const chatWindowRef = React.useRef(null);
 
   useEffect(() => {
-    if (isAuthenticated && user) {
+    const fetchChatUser = async (token) => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/users/${userId}`
+        );
+        setChatUser(response.data);
+        console.log("Chat User:", response.data); // Log the fetched user details
+      } catch (error) {
+        console.error("Error fetching Chat User details", error);
+      }
+    };
+
+    if (isAuthenticated) {
+      fetchChatUser(); // Fetch chat user when authenticated
+
       socket.emit("joinChat", user._id);
 
       socket.on("chatHistory", (history) => {
@@ -37,10 +53,7 @@ const Chat = () => {
   }, [isAuthenticated, userId, user]);
 
   const sendMessage = () => {
-    if (!message.trim()) return;
-
-    if (!user) return;
-    if (!userId) return;
+    if (!message.trim() || !user || !userId) return;
 
     const msg = {
       text: message,
@@ -60,58 +73,73 @@ const Chat = () => {
     }
   }, [chatHistory]);
 
-  return (
-    <div className="flex flex-col h-screen bg-gray-900 p-4">
-      <div
-        ref={chatWindowRef}
-        className="chat-window flex flex-col overflow-auto h-full bg-gray-800 rounded-lg p-4 space-y-2"
-      >
-        {chatHistory.map((msg, index) => (
+  return ( <div className="flex flex-col h-screen bg-white p-4">
+    <div className="text-gray-700 mb-4">
+      {chatUser ? `Chatting with: ${chatUser.username}` : "Loading..."}
+    </div>
+    <div
+      ref={chatWindowRef}
+      className="chat-window flex flex-col overflow-auto h-full bg-gray-100 rounded-lg p-4 space-y-2"
+    >
+      {chatHistory.map((msg, index) => (
+        <div
+          key={index}
+          className={`flex items-start ${
+            msg.sender === user._id ? "justify-end" : "justify-start"
+          }`}
+        >
+          {msg.sender !== user._id && (
+            <img
+              src={chatUser?.avatar}
+              alt="user avatar"
+              className="w-8 h-8 rounded-full mr-2"
+            />
+          )}
           <div
-            key={index}
-            className={`flex items-start ${
-              msg.sender === user._id ? "justify-end" : "justify-start"
+            className={`p-3 rounded-lg max-w-[70%] ${
+              msg.sender === user._id
+                ? "bg-blue-600 text-white"
+                : "bg-gray-200 text-black"
             }`}
           >
-            <div
-              className={`p-3 rounded-lg max-w-[70%] ${
-                msg.sender === user._id
-                  ? "bg-green-600 text-white"
-                  : "bg-gray-700 text-gray-300"
-              }`}
-            >
-              <p className="text-sm">
-                {msg.sender === user._id ? "You" : msg.sender}: {msg.text}
-              </p>
-              <span className="text-xs text-gray-400">
-                {new Date(msg.createdAt).toLocaleString("en-US", {
-                  hour: "numeric",
-                  minute: "numeric",
-                  hour12: true,
-                })}
+            <p className="text-sm">
+              <span className="font-semibold">
+                {msg.sender === user._id ? "You" : chatUser?.username}
               </span>
-            </div>
+              : {msg.text}
+            </p>
+            <span
+              className="text-xs text-gray-500"
+              style={{ fontSize: "0.7rem", marginTop: "4px" }}
+            >
+              {new Date(msg.createdAt).toLocaleString("en-US", {
+                hour: "numeric",
+                minute: "numeric",
+                hour12: true,
+              })}
+            </span>
           </div>
-        ))}
-      </div>
-      <div className="flex items-center mt-4">
-        <input
-          type="text"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="Type a message..."
-          className="flex-grow p-3 rounded-lg bg-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring focus:ring-blue-400"
-        />
-        <button
-          onClick={sendMessage}
-          className="ml-2 bg-blue-600 text-white rounded-lg px-4 py-2 transition-transform duration-200 hover:scale-105"
-        >
-          Send
-        </button>
-      </div>
+        </div>
+      ))}
     </div>
-  );
+    <div className="flex items-center mt-4 stick bottom-0">
+      <input
+        type="text"
+        value={message}
+        onChange={(e) => setMessage(e.target.value)}
+        onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+        placeholder="Type a message..."
+        className="flex-grow p-3 rounded-lg bg-gray-200 text-black placeholder-gray-400 focus:outline-none focus:ring focus:ring-blue-400"
+      />
+      <button
+        onClick={sendMessage}
+        className="ml-2 bg-blue-600 text-white rounded-lg px-4 py-2 transition-transform duration-200 hover:scale-105"
+      >
+        Send
+      </button>
+    </div>
+  </div>
+);
 };
 
 export default Chat;

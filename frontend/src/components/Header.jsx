@@ -5,7 +5,7 @@ import Chat from "./Chat"; // Import the Chat component
 
 export default function Header() {
   const navigate = useNavigate();
-  const { isAuthenticated, avatar } = useAuth();
+  const { isAuthenticated, avatar,user } = useAuth();
   const [isLoggedin, setIslogged] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [showChat, setShowChat] = useState(false); // State to show/hide chat
@@ -36,7 +36,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gradient-to-r from-blue-900 via-red-300 to-green-800 shadow-lg">
+    <header className=" sticky top-0 z-50  bg-gradient-to-r from-blue-900 via-red-300 to-green-800 shadow-lg rounded-xl">
       <div className="flex justify-between items-center max-w-6xl mx-auto p-4">
         {/* Left - App Name */}
         <Link to="/">

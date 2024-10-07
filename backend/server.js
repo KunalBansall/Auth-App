@@ -9,6 +9,7 @@ const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const updateAvatars = require("./utils/updateAvatars");
 const { handleSocketConnection } = require("./controllers/chatController");
+const User = require("./models/userModel"); // Import the User model
 
 dotenv.config();
 const app = express();

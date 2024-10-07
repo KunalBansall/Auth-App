@@ -5,20 +5,12 @@ const User = require("../models/userModel");
 exports.signUp = async (req, res) => {
   const { username, email, password } = req.body;
   try {
-    // const existingUser = await User.findOne({ email });
-    // if (existingUser) {
-    //   return res.status(400).send( {message:"User already exists"});
-    // }
-    console.log("Checking if user exists with email:", email); // Log the email being checked
-
+   
     const existingUser = await User.findOne({ email: email.toLowerCase() });
 
     if (existingUser) {
-      console.log("User already exists:", existingUser); // Log if a user is found
       return res.status(400).json({ message: "User already exists" });
     }
-
-    console.log("User does not exist, creating new user.");
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -30,7 +22,7 @@ exports.signUp = async (req, res) => {
         "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png",
     });
 
-    await User.updateMany({}, [{ $set: { email: { $toLower: "$email" } } }]);
+    
 
     await user.save();
     console.log("User created successfully");
