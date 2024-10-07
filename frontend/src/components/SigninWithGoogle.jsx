@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { auth, provider } from "../firebase.js"; // Ensure this path is correct
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
-
+import axios from "axios";
 const SignInWithGoogle = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -13,13 +13,29 @@ const SignInWithGoogle = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
+      // let token, username, email, avatar;
 
-      // Get the user's token and store it
-      const token = await user.getIdToken();
+      if (user) {
+        // Get the user's token and store it
+        const token = await user.getIdToken();
+        const email = user.email;
+        const username = user.displayName;
 
-      // Store the user's avatar URL in local storage
-      const avatar = user.photoURL; // Use correct property name
-      login(token, avatar);
+        // Store the user's avatar URL in local storage
+        const avatar =
+          user.photoURL ||
+          "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"; // Use correct property name
+      
+
+      await axios.post("http://localhost:5000/auth/google-signin", {
+        email,
+        avatar,
+        username,
+      });
+      console.log("User object: ", user);
+
+      console.log("User photoURL: ", user.photoURL);
+      login(token, avatar, username);
 
       toast.success("Google Sign-In Successful!", {
         position: "top-right",
@@ -30,7 +46,8 @@ const SignInWithGoogle = () => {
         draggable: true,
       });
 
-      setTimeout(() => navigate("/"), 3000);
+      setTimeout(() => navigate("/"), 1000);
+    }
     } catch (error) {
       console.error("Error signing in with Google: ", error);
       toast.error("Google Sign-In Failed! Please try again.", {

@@ -35,23 +35,31 @@ export const AuthProvider = ({ children }) => {
             ...currentUser,
             avatar: currentUser.avatar || defaultAvatarUrl,
           });
+          localStorage.setItem("user",JSON.stringify(currentUser));
         } else {
           console.warn("No user found with the given token ID after login.");
+          logout();
         }
       })
       .catch((error) => {
         console.error("Error fetching user data after login:", error);
-        logout();
+        // logout();
       });
   };
 
-  const login = (token, avatar) => {
+  const login = (token, avatar,username) => {
     localStorage.setItem("token", token);
     setIsAuthenticated(true);
-    fetchUserData(token);
+    const currentUser = {
+      username,
+      avatar,
+    };
+    setUser(currentUser); // Set user state
+    localStorage.setItem("user", JSON.stringify(currentUser));
   };
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setIsAuthenticated(false);
     setUser(null); // Clear user on logout
   };

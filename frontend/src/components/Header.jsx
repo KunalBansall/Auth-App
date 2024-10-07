@@ -5,7 +5,7 @@ import Chat from "./Chat"; // Import the Chat component
 
 export default function Header() {
   const navigate = useNavigate();
-  const { isAuthenticated, avatar,user } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [isLoggedin, setIslogged] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
   const [showChat, setShowChat] = useState(false); // State to show/hide chat
@@ -15,11 +15,10 @@ export default function Header() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    const storedAvatarUrl = localStorage.getItem("avatar"); // Getting the stored avatar URL
 
     setIslogged(!!token);
-    setAvatarUrl(storedAvatarUrl || defaultAvatarUrl); // Use a default avatar URL
-  }, [avatar]);
+    setAvatarUrl(defaultAvatarUrl); // Use a default avatar URL
+  }, []);
 
 
   const handleSignout = () => {
@@ -59,7 +58,7 @@ export default function Header() {
           
               <Link to="/profile">
                 <img
-                  src={avatar || avatarUrl}
+                  src={ avatarUrl}
                   alt="User Avatar"
                   className="w-10 h-10 rounded-full"
                 />
