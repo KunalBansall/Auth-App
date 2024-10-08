@@ -1,18 +1,26 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
   const navigate = useNavigate();
   const { logout, user } = useAuth();
+  // const [ user , setuser]= useState(null);
 
   // Log user object for debugging
   console.log(user);
+// useEffect(()=>{
+//   const storedUser = localStorage.getItem('user');
+//   if(storedUser){
+//     setuser(JSON.parse(storedUser))
+//   }
+// } ,[]);
 
   const handleSignout = () => {
     const ConfirmSignout = window.confirm("Are you sure you wanna sign out?");
     if (ConfirmSignout) {
       logout();
+
       navigate("/sign-in");
     }
   };

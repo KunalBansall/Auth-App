@@ -28,14 +28,14 @@ export const AuthProvider = ({ children }) => {
         const decodedToken = jwtDecode(token);
         const tokenUserId = decodedToken.userId;
         const currentUser = response.data.find((u) => u._id === tokenUserId);
-        
+
         if (currentUser) {
           setIsAuthenticated(true);
           setUser({
             ...currentUser,
             avatar: currentUser.avatar || defaultAvatarUrl,
           });
-          localStorage.setItem("user",JSON.stringify(currentUser));
+          localStorage.setItem("user", JSON.stringify(currentUser));
         } else {
           console.warn("No user found with the given token ID after login.");
           logout();
@@ -47,10 +47,11 @@ export const AuthProvider = ({ children }) => {
       });
   };
 
-  const login = (token, avatar,username) => {
+  const login = (token, avatar, username) => {
     localStorage.setItem("token", token);
     setIsAuthenticated(true);
     const currentUser = {
+    _id:  username,
       username,
       avatar,
     };
@@ -65,9 +66,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider
-      value={{ isAuthenticated, login,  logout, user }}
-    >
+    <AuthContext.Provider value={{ isAuthenticated, login, logout, user }}>
       {children}
     </AuthContext.Provider>
   );
