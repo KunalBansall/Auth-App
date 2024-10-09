@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 const defaultAvatarUrl =
   "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"; // Default avatar
-const API_URL = "http://localhost:5000"
+const API_URL = "http://localhost:5000";
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -38,8 +38,6 @@ export const AuthProvider = ({ children }) => {
             ...currentUser,
             avatar: currentUser.avatar || defaultAvatarUrl,
           });
-          
-
         } else {
           console.warn("No user found with the given token ID after login.");
           logout();
@@ -51,16 +49,16 @@ export const AuthProvider = ({ children }) => {
       });
   };
 
-  const login = (token, avatar, username ,id) => {
+  const login = (token, avatar, username, id) => {
     // localStorage.setItem("token", token);
     sessionStorage.setItem("token", token); // Change to sessionStorage
-  
-     console.log("username" ,username , "avaatr", avatar,id);
+
+    console.log("username", username, "avaatr", avatar, id);
     setIsAuthenticated(true);
     const currentUser = {
       username,
       avatar,
-      id
+      id,
     };
     // console.log(currentUser , "helo");
 
@@ -68,7 +66,6 @@ export const AuthProvider = ({ children }) => {
     setUser(currentUser); // Set user state
     // localStorage.setItem("user", JSON.stringify(currentUser));
     // console.log(currentUser);
-
   };
   const logout = () => {
     // localStorage.removeItem("token");
