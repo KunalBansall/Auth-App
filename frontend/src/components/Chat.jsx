@@ -16,8 +16,13 @@ const Chat = () => {
   const [chatHistory, setChatHistory] = useState([]);
   const [chatUser, setChatUser] = useState(null);
   const chatWindowRef = React.useRef(null);
+  const[ourUser , setOurUser]= useState();
 
   useEffect(() => {
+
+    const sessionS = sessionStorage.getItem("user");
+    setOurUser(sessionS);
+    console.log("session" , ourUser);
     const fetchChatUser = async (token) => {
       try {
         const response = await axios.get(
@@ -29,11 +34,12 @@ const Chat = () => {
         console.error("Error fetching Chat User details", error);
       }
     };
+
     if (isAuthenticated) {
       fetchChatUser(); // Fetch chat user when authenticated
-      console.log("user ", user, "userid", user._id,"username", user.username);
+      console.log("user ", user, "userid", user.id,"username", user.username);
 
-      socket.emit("joinChat", user._id);
+      socket.emit("joinChat", user.id);
 
       socket.on("chatHistory", (history) => {
         setChatHistory(history);
@@ -50,18 +56,18 @@ const Chat = () => {
       socket.off("receiveMessage");
       socket.off("chatHistory");
     };
-  }, [isAuthenticated, userId, user]);
+  }, [isAuthenticated, userId]);
 
   const sendMessage = () => {
     if (!message.trim() || !user || !userId) return;
 
     const msg = {
       text: message,
-      sender: user._id,
+      sender: user.id,
       recipient: userId,
       createdAt: new Date(),
     };
-    console.log("sender", user._id, " reciept",userId , "msg",message);
+    console.log("sender", user.id, " reciept",userId , "msg",message);
 
     socket.emit("sendMessage", msg);
     setChatHistory((prev) => [...prev, msg]);
@@ -74,7 +80,8 @@ const Chat = () => {
     }
   }, [chatHistory]);
 
-  return ( <div className="flex flex-col h-screen bg-white p-4">
+  return (
+     <div className="flex flex-col h-screen bg-white p-4">
       <div className="text-gray-700 mb-4">
         {chatUser ? `Chatting with: ${chatUser.username}` : "Loading..."}
       </div>
@@ -86,10 +93,10 @@ const Chat = () => {
           <div
             key={index}
             className={`flex items-start ${
-              msg.sender === user._id ? "justify-end" : "justify-start"
+              msg.sender === user.id ? "justify-end" : "justify-start"
             }`}
           >
-            {msg.sender !== user._id && (
+            {msg.sender !== user.id && (
               <img
                 src={chatUser?.avatar}
                 alt="user avatar"
@@ -98,14 +105,14 @@ const Chat = () => {
             )}
             <div
               className={`p-3 rounded-lg max-w-[70%] ${
-                msg.sender === user._id
+                msg.sender === user.id
                   ? "bg-blue-600 text-white"
                   : "bg-gray-200 text-black"
               }`}
             >
               <p className="text-sm">
                 <span className="font-semibold">
-                  {msg.sender === user._id ? "You" : chatUser?.username}
+                  {msg.sender === user.id ? "You" : chatUser?.username}
                 </span>
                 : {msg.text}
               </p>

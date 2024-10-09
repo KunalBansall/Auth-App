@@ -44,7 +44,10 @@ exports.signIn = async (req, res) => {
   const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
     expiresIn: "1h",
   });
-  res.json({ token });
+
+  const {password :pass , ...rest}= user._doc;
+  res.json({ token ,user:rest});;
+  
 };
 
 exports.googleSignIn = async (req, res) => {

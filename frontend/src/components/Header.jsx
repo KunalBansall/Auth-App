@@ -14,11 +14,17 @@ export default function Header() {
     "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"; // A placeholder image
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
+    // const  = sessionStorage.getItem("token");
 
     setIslogged(!!token);
-    setAvatarUrl(defaultAvatarUrl); // Use a default avatar URL
-  }, []);
+    if(user ){
+
+      setAvatarUrl(user.avatar); // Use a default avatar URL
+    }else{
+      setAvatarUrl(defaultAvatarUrl);
+    }
+  }, [user]);
 
 
   const handleSignout = () => {
@@ -26,8 +32,8 @@ export default function Header() {
       "Are you sure you want to sign out ?"
     );
     if (confirmSignout) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("avatar");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("avatar");
       setIslogged(false);
       setAvatarUrl("");
       navigate("/sign-in");
@@ -58,7 +64,7 @@ export default function Header() {
           
               <Link to="/profile">
                 <img
-                  src={ avatarUrl}
+                  src={ avatarUrl || defaultAvatarUrl}
                   alt="User Avatar"
                   className="w-10 h-10 rounded-full"
                 />

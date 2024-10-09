@@ -4,17 +4,23 @@ import { useAuth } from "../context/AuthContext";
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { logout, user } = useAuth();
-  // const [ user , setuser]= useState(null);
+  const { logout, user: ContextUser } = useAuth();
+  const [ user , setuser]= useState("");
 
   // Log user object for debugging
-  console.log(user);
-// useEffect(()=>{
-//   const storedUser = localStorage.getItem('user');
-//   if(storedUser){
-//     setuser(JSON.parse(storedUser))
-//   }
-// } ,[]);
+  // console.log(user);
+
+useEffect(()=>{
+  const storedUser = sessionStorage.getItem('user');
+  if(storedUser){
+    setuser(JSON.parse(storedUser))
+    console.log("user", user );
+  }
+  // console.log( "context",ContextUser);
+} ,[]);
+
+
+
 
   const handleSignout = () => {
     const ConfirmSignout = window.confirm("Are you sure you wanna sign out?");

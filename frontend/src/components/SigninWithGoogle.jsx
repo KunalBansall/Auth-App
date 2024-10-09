@@ -18,7 +18,9 @@ const SignInWithGoogle = () => {
       const user = result.user;
       // let token, username, email, avatar;
       console.log("Google sign-in result:", result); // Log the result for debugging
+      console.log("User object: ", user);
 
+      console.log("User photoURL: ", user.photoURL);
       if (user) {
         // Get the user's token and store it
         const token = await user.getIdToken();
@@ -40,7 +42,9 @@ const SignInWithGoogle = () => {
         console.log("User object: ", user);
 
         console.log("User photoURL: ", user.photoURL);
-        login(res.data.token, res.data.avatar, res.data.username ,res.data._id);
+        login(res.data.token, res.data.user.avatar, res.data.user.username ,res.data.user._id);
+        sessionStorage.setItem('token' ,res.data.token);
+        
 
         toast.success("Google Sign-In Successful!", {
           position: "top-right",

@@ -6,8 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import SignInWithGoogle from "../components/SigninWithGoogle";
 import { useAuth } from "../context/AuthContext";
 
-const API_URL = "https://auth-app-main-4bam.onrender.com/auth" ;
-// const API_URL = "http://localhost:5000/auth";
+// const API_URL = "https://auth-app-main-4bam.onrender.com/auth" ;
+const API_URL = "http://localhost:5000/auth";
 
 function Signin() {
   const navigate = useNavigate();
@@ -24,7 +24,9 @@ function Signin() {
     try {
       const res = await axios.post(`${API_URL}/sign-in`, formData);
       // localStorage.setItem("token", res.data.token);
-      login(res.data.token, res.data.avatar);
+      // sessionStorage.setItem("user", res.data);
+      login(res.data.token, res.data.user.avatar , res.data.user.username,res.data.user._id);
+      console.log("res", res.data);
 
       //Toast on Success
       toast.success("Login Success", {
@@ -62,7 +64,14 @@ function Signin() {
     }
   };
 
+ const sessn = sessionStorage.getItem("user");
+ if(sessn){
+  navigate('/');
+ }
+  
   return (
+    
+    
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
         <h1 className="text-3xl font-bold text-white text-center mb-6">

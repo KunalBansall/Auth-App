@@ -5,6 +5,7 @@ import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 const defaultAvatarUrl =
   "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"; // Default avatar
+const API_URL = "http://localhost:5000"
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -21,7 +22,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUserData = (token) => {
     axios
-      .get("http://localhost:5000/api/users", {
+      .get(`${API_URL}/api/users`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -37,8 +38,7 @@ export const AuthProvider = ({ children }) => {
             ...currentUser,
             avatar: currentUser.avatar || defaultAvatarUrl,
           });
-          // localStorage.setItem("user", JSON.stringify(currentUser));
-          sessionStorage.setItem("user", JSON.stringify(currentUser)); // Change to sessionStorage
+          
 
         } else {
           console.warn("No user found with the given token ID after login.");
@@ -54,16 +54,20 @@ export const AuthProvider = ({ children }) => {
   const login = (token, avatar, username ,id) => {
     // localStorage.setItem("token", token);
     sessionStorage.setItem("token", token); // Change to sessionStorage
-
+  
+     console.log("username" ,username , "avaatr", avatar,id);
     setIsAuthenticated(true);
     const currentUser = {
       username,
       avatar,
       id
     };
+    // console.log(currentUser , "helo");
+
+    sessionStorage.setItem("user", JSON.stringify(currentUser)); // Change to sessionStorage
     setUser(currentUser); // Set user state
     // localStorage.setItem("user", JSON.stringify(currentUser));
-    sessionStorage.setItem("user", JSON.stringify(currentUser)); // Change to sessionStorage
+    // console.log(currentUser);
 
   };
   const logout = () => {
