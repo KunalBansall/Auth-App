@@ -47,13 +47,13 @@ export const AuthProvider = ({ children }) => {
       });
   };
 
-  const login = (token, avatar, username) => {
+  const login = (token, avatar, username ,id) => {
     localStorage.setItem("token", token);
     setIsAuthenticated(true);
     const currentUser = {
-    _id:  username,
       username,
       avatar,
+      id
     };
     setUser(currentUser); // Set user state
     localStorage.setItem("user", JSON.stringify(currentUser));

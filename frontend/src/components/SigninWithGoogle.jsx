@@ -29,7 +29,7 @@ const SignInWithGoogle = () => {
           user.photoURL ||
           "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"; // Use correct property name
 
-        await axios.post("http://localhost:5000/auth/google-signin", {
+      const res =  await axios.post("http://localhost:5000/auth/google-signin", {
           email,
           avatar,
           username,
@@ -37,7 +37,7 @@ const SignInWithGoogle = () => {
         console.log("User object: ", user);
 
         console.log("User photoURL: ", user.photoURL);
-        login(token, avatar, username);
+        login(res.data.token, res.data.avatar, res.data.username ,res.data._id);
 
         toast.success("Google Sign-In Successful!", {
           position: "top-right",
