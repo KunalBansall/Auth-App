@@ -5,6 +5,9 @@ import { auth, provider } from "../firebase.js"; // Ensure this path is correct
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import axios from "axios";
+
+const API_URL = "https://auth-app-main-4bam.onrender.com/auth" ;
+
 const SignInWithGoogle = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -29,7 +32,7 @@ const SignInWithGoogle = () => {
           user.photoURL ||
           "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"; // Use correct property name
 
-      const res =  await axios.post("http://localhost:5000/auth/google-signin", {
+      const res =  await axios.post(`${API_URL}/google-signin`, {
           email,
           avatar,
           username,

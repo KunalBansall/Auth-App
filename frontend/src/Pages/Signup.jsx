@@ -5,8 +5,8 @@ import { toast, ToastContainer } from "react-toastify"; // Import toast function
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for toast notifications
 import SignInWithGoogle from "../components/SigninWithGoogle";
 
-// const API_URL = "https://auth-app-main-4bam.onrender.com/auth";
-const API_URL = "http://localhost:5000/auth";
+const API_URL = "https://auth-app-main-4bam.onrender.com/auth";
+// const API_URL = "http://localhost:5000/auth";
 
 function Signup() {
   const [formData, setFormData] = useState({

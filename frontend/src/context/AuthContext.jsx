@@ -11,7 +11,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    // const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token"); // Change to sessionStorage
+
     if (token) {
       fetchUserData(token);
     }
@@ -35,7 +37,9 @@ export const AuthProvider = ({ children }) => {
             ...currentUser,
             avatar: currentUser.avatar || defaultAvatarUrl,
           });
-          localStorage.setItem("user", JSON.stringify(currentUser));
+          // localStorage.setItem("user", JSON.stringify(currentUser));
+          sessionStorage.setItem("user", JSON.stringify(currentUser)); // Change to sessionStorage
+
         } else {
           console.warn("No user found with the given token ID after login.");
           logout();
@@ -48,7 +52,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = (token, avatar, username ,id) => {
-    localStorage.setItem("token", token);
+    // localStorage.setItem("token", token);
+    sessionStorage.setItem("token", token); // Change to sessionStorage
+
     setIsAuthenticated(true);
     const currentUser = {
       username,
@@ -56,11 +62,15 @@ export const AuthProvider = ({ children }) => {
       id
     };
     setUser(currentUser); // Set user state
-    localStorage.setItem("user", JSON.stringify(currentUser));
+    // localStorage.setItem("user", JSON.stringify(currentUser));
+    sessionStorage.setItem("user", JSON.stringify(currentUser)); // Change to sessionStorage
+
   };
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    // localStorage.removeItem("token");
+    // localStorage.removeItem("user");
+    sessionStorage.removeItem("token"); // Change to sessionStorage
+    sessionStorage.removeItem("user"); // Change to sessionStorage
     setIsAuthenticated(false);
     setUser(null); // Clear user on logout
   };
