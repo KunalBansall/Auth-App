@@ -32,7 +32,7 @@ const Chat = () => {
           `http://localhost:5000/api/users/${userId}`
         );
         setChatUser(response.data);
-        // console.log("Chat User:", response.data); // Log the fetched user details
+        console.log("Chat User:", response.data); // Log the fetched user details
       } catch (error) {
         console.error("Error fetching Chat User details", error);
       }
@@ -40,7 +40,7 @@ const Chat = () => {
 
     if (isAuthenticated) {
       fetchChatUser(); // Fetch chat user when authenticated
-      // console.log("user ", user, "userid", user.id,"username", user.username);
+      console.log("user ", user, "userid", user.id,"username", user.username);
 
       socket.emit("joinChat", user.id);
 
@@ -70,7 +70,7 @@ const Chat = () => {
       recipient: userId,
       createdAt: new Date(),
     };
-    // console.log("sender", user.id, " reciept",userId , "msg",message);
+    console.log("sender", user.id, " reciept",userId , "msg",message);
 
     socket.emit("sendMessage", msg);
     setChatHistory((prev) => [...prev, msg]);

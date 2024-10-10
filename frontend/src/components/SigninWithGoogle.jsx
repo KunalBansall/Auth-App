@@ -39,7 +39,7 @@ const SignInWithGoogle = () => {
           avatar,
           username,
         });
-        // console.log("User object: ", user);
+        console.log("User object GOogle login: ", user);
 
         // console.log("User photoURL: ", user.photoURL);
         login(res.data.token, res.data.user.avatar, res.data.user.username ,res.data.user._id);

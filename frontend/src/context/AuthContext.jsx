@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.setItem("user", JSON.stringify(currentUser)); // Change to sessionStorage
     setUser(currentUser); // Set user state
     // localStorage.setItem("user", JSON.stringify(currentUser));
-    // console.log(currentUser);
+    console.log(currentUser);
   };
   const logout = () => {
     // localStorage.removeItem("token");
