@@ -26,7 +26,7 @@ function Signin() {
       // localStorage.setItem("token", res.data.token);
       // sessionStorage.setItem("user", res.data);
       login(res.data.token, res.data.user.avatar , res.data.user.username,res.data.user._id);
-      console.log("res", res.data);
+      // console.log("res", res.data);
 
       //Toast on Success
       toast.success("Login Success", {

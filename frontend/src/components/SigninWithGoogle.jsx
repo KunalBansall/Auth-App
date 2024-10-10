@@ -17,14 +17,14 @@ const SignInWithGoogle = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
       // let token, username, email, avatar;
-      console.log("Google sign-in result:", result); // Log the result for debugging
-      console.log("User object: ", user);
+      // console.log("Google sign-in result:", result); // Log the result for debugging
+      // console.log("User object: ", user);
 
-      console.log("User photoURL: ", user.photoURL);
+      // console.log("User photoURL: ", user.photoURL);
       if (user) {
         // Get the user's token and store it
         const token = await user.getIdToken();
-        console.log("Token retrieved from user:", token); // Check if token is correct
+        // console.log("Token retrieved from user:", token); // Check if token is correct
 
         const email = user.email;
         const username = user.displayName;
@@ -39,9 +39,9 @@ const SignInWithGoogle = () => {
           avatar,
           username,
         });
-        console.log("User object: ", user);
+        // console.log("User object: ", user);
 
-        console.log("User photoURL: ", user.photoURL);
+        // console.log("User photoURL: ", user.photoURL);
         login(res.data.token, res.data.user.avatar, res.data.user.username ,res.data.user._id);
         sessionStorage.setItem('token' ,res.data.token);
         
