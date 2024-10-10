@@ -4,7 +4,10 @@ import { useAuth } from "../context/AuthContext";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-const socket = io("http://localhost:5000", {
+// const API_USER = 'http://localhost:5000';
+const API_URL = "https://auth-app-main-4bam.onrender.com" ;
+
+const socket = io(`${API_URL}`, {
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
 });
@@ -22,14 +25,14 @@ const Chat = () => {
 
     const sessionS = sessionStorage.getItem("user");
     setOurUser(sessionS);
-    console.log("session" , ourUser);
+    // console.log("session" , ourUser);
     const fetchChatUser = async (token) => {
       try {
         const response = await axios.get(
           `http://localhost:5000/api/users/${userId}`
         );
         setChatUser(response.data);
-        console.log("Chat User:", response.data); // Log the fetched user details
+        // console.log("Chat User:", response.data); // Log the fetched user details
       } catch (error) {
         console.error("Error fetching Chat User details", error);
       }
@@ -37,7 +40,7 @@ const Chat = () => {
 
     if (isAuthenticated) {
       fetchChatUser(); // Fetch chat user when authenticated
-      console.log("user ", user, "userid", user.id,"username", user.username);
+      // console.log("user ", user, "userid", user.id,"username", user.username);
 
       socket.emit("joinChat", user.id);
 
@@ -67,7 +70,7 @@ const Chat = () => {
       recipient: userId,
       createdAt: new Date(),
     };
-    console.log("sender", user.id, " reciept",userId , "msg",message);
+    // console.log("sender", user.id, " reciept",userId , "msg",message);
 
     socket.emit("sendMessage", msg);
     setChatHistory((prev) => [...prev, msg]);

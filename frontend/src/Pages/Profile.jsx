@@ -14,11 +14,13 @@ useEffect(()=>{
   const storedUser = sessionStorage.getItem('user');
   if(storedUser){
     setuser(JSON.parse(storedUser))
-    console.log("user", user );
+    // console.log("user", user );
+    // console.log("user avatar", user.avatar );
   }
-  // console.log( "context",ContextUser);
 } ,[]);
 
+
+// console.log( "user",user, "user.avatar", user.avatar, "context",ContextUser,"avatr context" , ContextUser.avatar);
 
 
 
@@ -39,7 +41,7 @@ useEffect(()=>{
 
         {/* Render avatar if available */}
         <img 
-          src={user && user.avatar ? user.avatar : "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"} 
+          src={ContextUser && ContextUser.avatar ? ContextUser.avatar : "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"} 
           alt="User Avatar"
           className="rounded-full w-32 h-32 mt-4"
         />

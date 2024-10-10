@@ -5,7 +5,8 @@ import { jwtDecode } from "jwt-decode";
 const AuthContext = createContext();
 const defaultAvatarUrl =
   "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"; // Default avatar
-const API_URL = "http://localhost:5000";
+// const API_URL = "http://localhost:5000";
+const API_URL = "https://auth-app-main-4bam.onrender.com" ;
 
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
