@@ -6,8 +6,8 @@ const Home = () => {
   const [users, setUsers] = useState([]);
 
     
-  // const API_USER = 'http://localhost:5000';
-  const API_URL = "https://auth-app-main-4bam.onrender.com" ;
+  const API_URL = 'http://localhost:5000';
+  // const API_URL = "https://auth-app-main-4bam.onrender.com" ;
 
   useEffect(() => {
     const fetchUsers = async () => {

@@ -50,23 +50,21 @@ export const AuthProvider = ({ children }) => {
       });
   };
 
-  const login = (token, avatar, username, id) => {
+  const login = (token, currUser) => {
     // localStorage.setItem("token", token);
     sessionStorage.setItem("token", token); // Change to sessionStorage
 
-    console.log("username", username, "avaatr", avatar, id);
     setIsAuthenticated(true);
     const currentUser = {
-      username,
-      avatar,
-      id,
+      currUser
     };
     // console.log(currentUser , "helo");
-
+    
     sessionStorage.setItem("user", JSON.stringify(currentUser)); // Change to sessionStorage
+    // console.log("username", currUser.username);
     setUser(currentUser); // Set user state
     // localStorage.setItem("user", JSON.stringify(currentUser));
-    console.log(currentUser);
+    // console.log(currentUser);
   };
   const logout = () => {
     // localStorage.removeItem("token");

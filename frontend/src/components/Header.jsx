@@ -18,14 +18,12 @@ export default function Header() {
     // const  = sessionStorage.getItem("token");
 
     setIslogged(!!token);
-    if(user ){
-
+    if (user) {
       setAvatarUrl(user.avatar); // Use a default avatar URL
-    }else{
+    } else {
       setAvatarUrl(defaultAvatarUrl);
     }
   }, [user]);
-
 
   const handleSignout = () => {
     const confirmSignout = window.confirm(
@@ -60,16 +58,14 @@ export default function Header() {
 
         {/* Right - Sign Out Button & Avatar */}
         <div className="flex items-center gap-4">
-          {isAuthenticated|| isLoggedin ? (
-          
-              <Link to="/profile">
-                <img
-                  src={ avatarUrl || defaultAvatarUrl}
-                  alt="User Avatar"
-                  className="w-10 h-10 rounded-full"
-                />
-              </Link>
-            
+          {isAuthenticated || isLoggedin ? (
+            <Link to="/profile">
+              <img
+                src={avatarUrl || defaultAvatarUrl}
+                alt="User Avatar"
+                className="w-10 h-10 rounded-full"
+              />
+            </Link>
           ) : (
             <Link to="/sign-in">
               <button className="font-bold bg-yellow-400 text-white py-2 px-4 rounded-lg hover:bg-yellow-500 transition outline ">
@@ -77,10 +73,6 @@ export default function Header() {
               </button>
             </Link>
           )}
-
-
-
-
         </div>
       </div>
     </header>

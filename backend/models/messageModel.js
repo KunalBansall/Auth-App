@@ -5,6 +5,7 @@ const messageSchema = new mongoose.Schema({
   sender: { type: String, required: true },
   recipient: { type: String, required: true },
   avatar: { type: String },
+  chatroomId: { type: String, required: true }, // New field for chatroom ID
   createdAt: { type: Date, default: Date.now },
 });
 
