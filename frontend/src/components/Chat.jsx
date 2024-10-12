@@ -29,9 +29,7 @@ const Chat = () => {
       return;
     }
 
-    const chatroomId = getChatroomId(user._id, userId); // Generate chatroom ID
-    console.log("Fetching messages for chatroomId:", chatroomId);
-
+    const chatroomId = getChatroomId(user._id, userId); // Generate chatroom
     const fetchChatUser = async () => {
       try {
         const response = await axios.get(`${API_URL}/api/users/${userId}`);
@@ -75,7 +73,7 @@ const Chat = () => {
       chatroomId, // Use the generated chatroom ID
       createdAt: new Date(),
     };
-    console.log("mesgge", msg);
+    // console.log("mesgge", msg);
 
     socket.emit("sendMessage", msg, (ack) => {
       if (ack.status === "success") {
@@ -83,8 +81,7 @@ const Chat = () => {
       } else {
         console.error("Message sending failed");
       }
-    }); // Emit the message to the server
-    setChatHistory((prev) => [...prev, msg]); // Update chat history locally
+    });
     setMessage(""); // Clear the message input
   };
 
