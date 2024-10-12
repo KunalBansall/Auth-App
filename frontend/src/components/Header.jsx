@@ -8,14 +8,12 @@ export default function Header() {
   const { isAuthenticated, user } = useAuth();
   const [isLoggedin, setIslogged] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState("");
-  const [showChat, setShowChat] = useState(false); // State to show/hide chat
 
   const defaultAvatarUrl =
     "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"; // A placeholder image
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
-    // const  = sessionStorage.getItem("token");
 
     setIslogged(!!token);
     if (user) {
@@ -31,7 +29,7 @@ export default function Header() {
     );
     if (confirmSignout) {
       sessionStorage.removeItem("token");
-      sessionStorage.removeItem("avatar");
+      sessionStorage.removeItem("user");
       setIslogged(false);
       setAvatarUrl("");
       navigate("/sign-in");

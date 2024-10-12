@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import axios from "axios";
 
-const API_URL = "https://auth-app-main-4bam.onrender.com/auth" ;
+const API_URL = "https://auth-app-main-4bam.onrender.com/auth";
+// const API_URL = "http://localhost:5000/auth" ;
 
 const SignInWithGoogle = () => {
   const navigate = useNavigate();
@@ -16,11 +17,7 @@ const SignInWithGoogle = () => {
     try {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      // let token, username, email, avatar;
-      // console.log("Google sign-in result:", result); // Log the result for debugging
-      // console.log("User object: ", user);
 
-      // console.log("User photoURL: ", user.photoURL);
       if (user) {
         // Get the user's token and store it
         const token = await user.getIdToken();
@@ -34,17 +31,14 @@ const SignInWithGoogle = () => {
           user.photoURL ||
           "https://cdn1.iconfinder.com/data/icons/user-pictures/101/malecostume-512.png"; // Use correct property name
 
-      const res =  await axios.post(`${API_URL}/google-signin`, {
+        const res = await axios.post(`${API_URL}/google-signin`, {
           email,
           avatar,
           username,
         });
-        // console.log("User object GOogle login: ", user);
 
-        // console.log("User photoURL: ", user.photoURL);
         login(res.data.token, res.data.user);
-        sessionStorage.setItem('token' ,res.data.token);
-        
+        sessionStorage.setItem("token", res.data.token);
 
         toast.success("Google Sign-In Successful!", {
           position: "top-right",
