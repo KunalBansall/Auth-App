@@ -21,6 +21,13 @@ app.use(
 );
 app.use(express.json());
 
+app.use((req, res, next) => {
+  res.setHeader(
+    "Content-Security-Policy",
+    "default-src 'self'; font-src 'self' data: https://auth-app-main-4bam.onrender.com; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
+  );
+  next();
+});
 // Routes
 app.use("/auth", authRoutes);
 app.use("/api", userRoutes);
@@ -36,6 +43,11 @@ mongoose
     updateAvatars();
   })
   .catch((err) => console.error(err));
+
+  
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
+  });
 
 // Socket.io server setup
 const server = http.createServer(app);
