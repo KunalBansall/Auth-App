@@ -6,8 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 import axios from "axios";
 
-const API_URL = "https://auth-app-main-4bam.onrender.com/auth";
-// const API_URL = "http://localhost:5000/auth" ;
+// const API_URL = "https://auth-app-main-4bam.onrender.com/auth";
+const API_URL = "http://localhost:5000/auth" ;
 
 const SignInWithGoogle = () => {
   const navigate = useNavigate();

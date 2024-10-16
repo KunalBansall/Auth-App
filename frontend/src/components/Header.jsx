@@ -42,7 +42,7 @@ export default function Header() {
         {/* Left - App Name */}
         <Link to="/">
           <h1 className="font-bold text-white bg-slate-600 rounded-lg p-2 hover:underline outline">
-            Auth-App
+            CHIT-CHAT
           </h1>
         </Link>
 

@@ -27,27 +27,36 @@ exports.handleSocketConnection = (io) => {
 
     // Handle sending messages
     socket.on("sendMessage", async (msg, callback) => {
-      const { text, sender, recipient, chatroomId } = msg;
-
+      const { text, sender, recipient, chatroomId ,mediaUrl } = msg;
+      console.log("Received message:", msg);
       try {
         const newMessage = new Message({
-          text,
+          chatroomId,
           sender,
           recipient,
-          chatroomId,
+          text,
+          mediaUrl: mediaUrl || '',
+          createdAt: new Date(),
         });
+   
+
+
         await newMessage.save();
+        console.log("Saved message:", newMessage);
+        console.log("Received message:", msg);
+        console.log("Received mediaUrl:", msg.mediaUrl);
+        
 
         // Send message to the entire chatroom
         io.to(chatroomId).emit("receiveMessage", newMessage);
+        console.log("newMessage", newMessage);
+        console.log("newMessageURL", mediaUrl);
 
-        // Emit the message back to the sender (optional if it's already in chatroom)
-        // socket.emit("receiveMessage", newMessage);
+        callback({ status: "success" });
       } catch (error) {
         console.error("Error sending message:", error);
         socket.emit("error", { message: "Failed to send message" });
       }
-      callback({ status: "success" });
     });
 
     // Handle user disconnect

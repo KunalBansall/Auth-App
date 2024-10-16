@@ -3,9 +3,11 @@ import io from "socket.io-client";
 import { useAuth } from "../context/AuthContext";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
+import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore"; // Firebase Firestore
 
-const API_URL = "https://auth-app-main-4bam.onrender.com";
-// const API_URL = "http://localhost:5000";
+// const API_URL = "https://auth-app-main-4bam.onrender.com";
+const API_URL = "http://localhost:5000";
 const socket = io(`${API_URL}`, {
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
@@ -20,16 +22,55 @@ const Chat = () => {
   const { userId } = useParams(); // Get the userId from params
   const { isAuthenticated, user } = useAuth();
   const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
   const [chatHistory, setChatHistory] = useState([]);
   const [chatUser, setChatUser] = useState(null);
   const chatWindowRef = useRef(null);
+  const [media, setMedia] = useState(null); // store media
+  const storage = getStorage();
 
+  useEffect(() => {
+    const fetchMessages = async () => {
+      const querySnapshot = await getDocs(
+        collection(getFirestore(), "messages")
+      );
+      let msgs = [];
+      querySnapshot.forEach((doc) => {
+        if (doc.data().chatroomId === chatroomId) {
+          msgs.push(doc.data());
+        }
+      });
+      setMessages(msgs);
+    };
+    fetchMessages();
+  }, []);
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setMedia(file);
+    }
+  };
+
+  const uploadMedia = async (file) => {
+    const storageRef = ref(storage, `chat-media/${file.name}`);
+    try {
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+
+      console.log("url", url);
+      return url;
+    } catch (error) {
+      console.error("Error uplading file");
+      return null;
+    }
+  };
   useEffect(() => {
     if (!isAuthenticated || !user || !user._id) {
       return;
     }
 
     const chatroomId = getChatroomId(user._id, userId); // Generate chatroom
+
     const fetchChatUser = async () => {
       try {
         const response = await axios.get(`${API_URL}/api/users/${userId}`);
@@ -40,8 +81,7 @@ const Chat = () => {
     };
 
     if (isAuthenticated) {
-      fetchChatUser(); // Fetch chat user when authenticated
-      // fetchChatHistory(); // Fetch chat history on mount
+      fetchChatUser();
 
       socket.emit("joinChat", { userId: user._id, chatroomId }); // Use generated chatroomId
 
@@ -62,22 +102,29 @@ const Chat = () => {
     };
   }, [isAuthenticated, userId, user]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (!message.trim() || !user || !userId) return;
 
     const chatroomId = getChatroomId(user._id, userId); // Generate chatroom ID
+    let mediaUrl = "";
+    if (media) {
+      mediaUrl = await uploadMedia(media);
+      console.log("media url", mediaUrl);
+    }
     const msg = {
+      chatroomId,
+      sender: user._id,
+      recipient: userId,
       text: message,
-      sender: user._id, // Ensure sender is the current user's ID
-      recipient: userId, // Ensure recipient is the ID from params
-      chatroomId, // Use the generated chatroom ID
+      mediaUrl,
       createdAt: new Date(),
     };
-    // console.log("mesgge", msg);
+    console.log("mesgge", msg);
 
     socket.emit("sendMessage", msg, (ack) => {
       if (ack.status === "success") {
         setMessage("");
+        setMedia(null);
       } else {
         console.error("Message sending failed");
       }
@@ -121,7 +168,7 @@ const Chat = () => {
             <div
               className={`p-3 rounded-lg max-w-[70%] ${
                 msg.sender === user._id
-                  ? "bg-blue-600 text-white"
+                  ? "bg-blue-900 text-white"
                   : "bg-gray-200 text-black"
               }`}
             >
@@ -131,6 +178,35 @@ const Chat = () => {
                 </span>
                 : {msg.text}
               </p>
+
+              {msg.mediaUrl && (
+                <div className="mt-2">
+                  msg.mediaUrl.endsWith(".jpg")||
+                  msg.mediaUrl.endsWith(".png")|| msg.mediaUrl.endsWith(".jpeg")
+                  ? (
+                  <img
+                    src={msg.mediaUrl}
+                    alt="Media"
+                    className="max-w-full rounded-lg"
+                  />
+                  ): msg.mediaUrl.endsWith(".mp4") ||
+                  msg.mediaUrl.endsWith('.mov') ? (
+                  <video controls className="max-w-full rounded-lg">
+                    <source src={msg.mediaUrl} type="video/mp4" />
+                    Your Browser
+                  </video>
+                  ) :(
+                  <a
+                    href={msg.mediaUrl}
+                    target="_blank"
+                    rel="nopener noreferrer"
+                  >
+                    <button className="text-blue-200"> View Media</button>
+                  </a>
+                  )
+                </div>
+              )}
+
               <span
                 className="text-xs text-gray-500"
                 style={{ fontSize: "0.7rem", marginTop: "4px" }}
@@ -153,6 +229,12 @@ const Chat = () => {
           onKeyPress={(e) => e.key === "Enter" && sendMessage()} // Send message on Enter key
           placeholder="Type a message"
           className="flex-grow p-2 border border-gray-300 rounded-l-lg focus:outline-none"
+        />
+        <input
+          type="file"
+          accept="image/*,video/*"
+          onChange={handleFileChange}
+          className="p-2"
         />
         <button
           onClick={sendMessage}
