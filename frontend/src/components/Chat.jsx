@@ -5,9 +5,10 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
 import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore"; // Firebase Firestore
+import { FaPlus, FaPaperclip } from "react-icons/fa"; // Add FontAwesome icons
 
-// const API_URL = "https://auth-app-main-4bam.onrender.com";
-const API_URL = "http://localhost:5000";
+const API_URL = "https://auth-app-main-4bam.onrender.com";
+// const API_URL = "http://localhost:5000";
 const socket = io(`${API_URL}`, {
   reconnectionAttempts: 5,
   reconnectionDelay: 1000,
@@ -28,6 +29,9 @@ const Chat = () => {
   const chatWindowRef = useRef(null);
   const [media, setMedia] = useState(null); // store media
   const storage = getStorage();
+  const getFileExtension = (filename) => {
+    return filename.split(".").pop().split(/\#|\?/)[0];
+  };
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -103,7 +107,7 @@ const Chat = () => {
   }, [isAuthenticated, userId, user]);
 
   const sendMessage = async () => {
-    if (!message.trim() || !user || !userId) return;
+    if ( !user || !userId) return;
 
     const chatroomId = getChatroomId(user._id, userId); // Generate chatroom ID
     let mediaUrl = "";
@@ -115,7 +119,7 @@ const Chat = () => {
       chatroomId,
       sender: user._id,
       recipient: userId,
-      text: message,
+      text: message.trim() || "",
       mediaUrl,
       createdAt: new Date(),
     };
@@ -144,12 +148,13 @@ const Chat = () => {
 
   return (
     <div className="flex flex-col h-screen bg-white p-4">
-      <div className="text-gray-700 mb-4">
+      <div className="text-gray-700 mb-4 sticky top-0 z-10 bg-white p-2">
         {chatUser ? `Chatting with: ${chatUser.username}` : "Loading..."}
       </div>
       <div
         ref={chatWindowRef}
-        className="chat-window flex flex-col overflow-auto h-full bg-gray-100 rounded-lg p-4 space-y-2"
+        className="chat-window flex flex-col overflow-y-auto h-full bg-gray-100 rounded-lg p-4 space-y-2 shadow-lg"
+        style={{ maxHeight: "calc(100vh - 120px)" }} 
       >
         {chatHistory.map((msg, index) => (
           <div
@@ -181,29 +186,33 @@ const Chat = () => {
 
               {msg.mediaUrl && (
                 <div className="mt-2">
-                  msg.mediaUrl.endsWith(".jpg")||
-                  msg.mediaUrl.endsWith(".png")|| msg.mediaUrl.endsWith(".jpeg")
-                  ? (
-                  <img
-                    src={msg.mediaUrl}
-                    alt="Media"
-                    className="max-w-full rounded-lg"
-                  />
-                  ): msg.mediaUrl.endsWith(".mp4") ||
-                  msg.mediaUrl.endsWith('.mov') ? (
-                  <video controls className="max-w-full rounded-lg">
-                    <source src={msg.mediaUrl} type="video/mp4" />
-                    Your Browser
-                  </video>
-                  ) :(
-                  <a
-                    href={msg.mediaUrl}
-                    target="_blank"
-                    rel="nopener noreferrer"
-                  >
-                    <button className="text-blue-200"> View Media</button>
-                  </a>
-                  )
+                  {getFileExtension(msg.mediaUrl) === "jpg" ||
+                  getFileExtension(msg.mediaUrl) === "jpeg" ||
+                  getFileExtension(msg.mediaUrl) === "png" ? (
+                    <img
+                      src={msg.mediaUrl}
+                      alt="Media"
+                      className="max-w-full rounded-lg"
+                    />
+                  ) : getFileExtension(msg.mediaUrl) === "mp4" ||
+                    getFileExtension(msg.mediaUrl) === "mov" ? (
+                    <video
+                      controls
+                      className="max-w-full rounded-lg"
+                      style={{ width: "100%" }}
+                    >
+                      <source src={msg.mediaUrl} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : (
+                    <a
+                      href={msg.mediaUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span className=" text-orange-400"> View Media</span>
+                    </a>
+                  )}
                 </div>
               )}
 
@@ -221,24 +230,33 @@ const Chat = () => {
           </div>
         ))}
       </div>
-      <div className="flex items-center mt-4">
+      <div className="flex items-center mt-4 justify-center">
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={(e) => e.key === "Enter" && sendMessage()} // Send message on Enter key
           placeholder="Type a message"
-          className="flex-grow p-2 border border-gray-300 rounded-l-lg focus:outline-none"
+          className="flex-grow p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
         />
+        <label
+          htmlFor="file-upload"
+          className="cursor-pointer p-2 bg-gray-200 rounded-full ml-2"
+          title="attach a file"
+        >
+          <FaPaperclip size={20} className="text-gray-600" />
+          
+        </label>
         <input
+          id="file-upload"
           type="file"
           accept="image/*,video/*"
           onChange={handleFileChange}
-          className="p-2"
+          className="hidden"
         />
         <button
           onClick={sendMessage}
-          className="bg-blue-600 text-white p-2 rounded-r-lg"
+          className="bg-blue-600 text-white p-3 rounded-r-lg ml-2"
         >
           Send
         </button>
