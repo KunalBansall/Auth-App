@@ -27,30 +27,30 @@ exports.handleSocketConnection = (io) => {
 
     // Handle sending messages
     socket.on("sendMessage", async (msg, callback) => {
-      const { text, sender, recipient, chatroomId ,mediaUrl } = msg;
-      console.log("Received message:", msg);
+      const { text, sender, recipient, chatroomId ,mediaUrls } = msg;
+      // console.log("Received message:", msg);
       try {
         const newMessage = new Message({
           chatroomId,
           sender,
           recipient,
           text,
-          mediaUrl: mediaUrl || '',
+          mediaUrls: mediaUrls || [],
           createdAt: new Date(),
         });
    
 
 
         await newMessage.save();
-        console.log("Saved message:", newMessage);
-        console.log("Received message:", msg);
-        console.log("Received mediaUrl:", msg.mediaUrl);
+        // console.log("Saved message:", newMessage);
+        // console.log("Received message:", msg);
+        // console.log("Received mediaUrl:", msg.mediaUrls);
         
 
         // Send message to the entire chatroom
         io.to(chatroomId).emit("receiveMessage", newMessage);
-        console.log("newMessage", newMessage);
-        console.log("newMessageURL", mediaUrl);
+        // console.log("newMessage", newMessage);
+        // console.log("newMessageURL", mediaUrls);
 
         callback({ status: "success" });
       } catch (error) {

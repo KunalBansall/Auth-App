@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import axios from "axios";
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
 import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore"; // Firebase Firestore
-import { FaPlus, FaPaperclip } from "react-icons/fa"; // Add FontAwesome icons
+import { FaPaperclip, FaTimesCircle } from "react-icons/fa"; // Add FontAwesome icons
 
 const API_URL = "https://auth-app-main-4bam.onrender.com";
 // const API_URL = "http://localhost:5000";
@@ -14,21 +14,21 @@ const socket = io(`${API_URL}`, {
   reconnectionDelay: 1000,
 });
 
-// Utility function to generate chatroom ID
 const getChatroomId = (userId1, userId2) => {
-  return [userId1, userId2].sort().join("-"); // Combine and sort user IDs
+  return [userId1, userId2].sort().join("-");
 };
 
 const Chat = () => {
-  const { userId } = useParams(); // Get the userId from params
+  const { userId } = useParams();
   const { isAuthenticated, user } = useAuth();
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [chatHistory, setChatHistory] = useState([]);
   const [chatUser, setChatUser] = useState(null);
   const chatWindowRef = useRef(null);
-  const [media, setMedia] = useState(null); // store media
+  const [media, setMedia] = useState([]); // storing media
   const storage = getStorage();
+
   const getFileExtension = (filename) => {
     return filename.split(".").pop().split(/\#|\?/)[0];
   };
@@ -49,10 +49,19 @@ const Chat = () => {
     fetchMessages();
   }, []);
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setMedia(file);
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      setMedia((prevMedia) => [...prevMedia, ...files].slice(0, 8));
     }
+    if (files.length + media.length > 8) {
+      alert("You can only upload up to 8 files.");
+      return;
+    }
+  };
+  const removeMedia = (indextoRemove) => {
+    setMedia((prevMedia) =>
+      prevMedia.filter((_, index) => index !== indextoRemove)
+    );
   };
 
   const uploadMedia = async (file) => {
@@ -73,7 +82,7 @@ const Chat = () => {
       return;
     }
 
-    const chatroomId = getChatroomId(user._id, userId); // Generate chatroom
+    const chatroomId = getChatroomId(user._id, userId); // Generating chatroom
 
     const fetchChatUser = async () => {
       try {
@@ -107,20 +116,24 @@ const Chat = () => {
   }, [isAuthenticated, userId, user]);
 
   const sendMessage = async () => {
-    if ( !user || !userId) return;
+    if (!user || !userId) return;
 
     const chatroomId = getChatroomId(user._id, userId); // Generate chatroom ID
-    let mediaUrl = "";
-    if (media) {
-      mediaUrl = await uploadMedia(media);
-      console.log("media url", mediaUrl);
+    let mediaUrls = [];
+    if (media.length) {
+      for (let file of media) {
+        const url = await uploadMedia(file);
+        if (url) mediaUrls.push(url);
+      }
+      // mediaUrl = await uploadMedia(media);
+      console.log("media url", mediaUrls);
     }
     const msg = {
       chatroomId,
       sender: user._id,
       recipient: userId,
       text: message.trim() || "",
-      mediaUrl,
+      mediaUrls,
       createdAt: new Date(),
     };
     console.log("mesgge", msg);
@@ -128,7 +141,7 @@ const Chat = () => {
     socket.emit("sendMessage", msg, (ack) => {
       if (ack.status === "success") {
         setMessage("");
-        setMedia(null);
+        setMedia([]);
       } else {
         console.error("Message sending failed");
       }
@@ -154,7 +167,7 @@ const Chat = () => {
       <div
         ref={chatWindowRef}
         className="chat-window flex flex-col overflow-y-auto h-full bg-gray-100 rounded-lg p-4 space-y-2 shadow-lg"
-        style={{ maxHeight: "calc(100vh - 120px)" }} 
+        style={{ maxHeight: "calc(100vh - 120px)" }}
       >
         {chatHistory.map((msg, index) => (
           <div
@@ -184,35 +197,35 @@ const Chat = () => {
                 : {msg.text}
               </p>
 
-              {msg.mediaUrl && (
+              {msg.mediaUrls && msg.mediaUrls.length > 0 && (
                 <div className="mt-2">
-                  {getFileExtension(msg.mediaUrl) === "jpg" ||
-                  getFileExtension(msg.mediaUrl) === "jpeg" ||
-                  getFileExtension(msg.mediaUrl) === "png" ? (
-                    <img
-                      src={msg.mediaUrl}
-                      alt="Media"
-                      className="max-w-full rounded-lg"
-                    />
-                  ) : getFileExtension(msg.mediaUrl) === "mp4" ||
-                    getFileExtension(msg.mediaUrl) === "mov" ? (
-                    <video
-                      controls
-                      className="max-w-full rounded-lg"
-                      style={{ width: "100%" }}
-                    >
-                      <source src={msg.mediaUrl} type="video/mp4" />
-                      Your browser does not support the video tag.
-                    </video>
-                  ) : (
-                    <a
-                      href={msg.mediaUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <span className=" text-orange-400"> View Media</span>
-                    </a>
-                  )}
+                  {msg.mediaUrls.map((url, index) => {
+                    const fileExt = getFileExtension(url);
+                    return (
+                      <div key={index}>
+                        {["jpg", "jpeg", "png"].includes(fileExt) ? (
+                          <img
+                            src={url}
+                            alt="Media"
+                            className="max-w-full rounded-lg"
+                          />
+                        ) : ["mp4", "mov"].includes(fileExt) ? (
+                          <video controls className="max-w-full rounded-lg">
+                            <source src={url} type={`video/${fileExt}`} />
+                            Your browser does not support the video tag.
+                          </video>
+                        ) : (
+                          <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <span className="text-orange-400"> View Media</span>
+                          </a>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
 
@@ -230,12 +243,32 @@ const Chat = () => {
           </div>
         ))}
       </div>
+      {media.length > 0 && (
+        <div className="media-preview grid grid-cols-4 gap-2 my-2">
+          {media.map((file, index) => (
+            <div key={index} className="relative group">
+              <img
+                src={URL.createObjectURL(file)}
+                alt={`media-${index}`}
+                className="w-full h-24 object-cover rounded-md"
+              />
+              <button
+                onClick={() => removeMedia(index)}
+                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100"
+              >
+                <FaTimesCircle />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className="flex items-center mt-4 justify-center">
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => e.key === "Enter" && sendMessage()} // Send message on Enter key
+          onKeyDown={(e) => e.key === "Enter" && sendMessage()} // Send message on Enter key
           placeholder="Type a message"
           className="flex-grow p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
         />
@@ -245,7 +278,6 @@ const Chat = () => {
           title="attach a file"
         >
           <FaPaperclip size={20} className="text-gray-600" />
-          
         </label>
         <input
           id="file-upload"
@@ -253,6 +285,7 @@ const Chat = () => {
           accept="image/*,video/*"
           onChange={handleFileChange}
           className="hidden"
+          multiple
         />
         <button
           onClick={sendMessage}

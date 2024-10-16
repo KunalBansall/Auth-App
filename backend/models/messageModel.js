@@ -6,7 +6,7 @@ const messageSchema = new mongoose.Schema({
   recipient: { type: String, required: true },
   text: { type: String },
   avatar: { type: String },
-  mediaUrl: { type:String , default :''},
+  mediaUrls: { type:[String] , default :[]},
   createdAt: { type: Date, default: Date.now },
 });
 
