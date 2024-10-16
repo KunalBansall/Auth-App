@@ -6,6 +6,7 @@ import axios from "axios";
 import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
 import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore"; // Firebase Firestore
 import { FaPaperclip, FaTimesCircle } from "react-icons/fa"; // Add FontAwesome icons
+import { getAuth } from "firebase/auth";
 
 const API_URL = "https://auth-app-main-4bam.onrender.com";
 // const API_URL = "http://localhost:5000";
@@ -27,6 +28,8 @@ const Chat = () => {
   const [chatUser, setChatUser] = useState(null);
   const chatWindowRef = useRef(null);
   const [media, setMedia] = useState([]); // storing media
+  const [uploading, setUploading] = useState(false); // track upload status
+
   const storage = getStorage();
 
   const getFileExtension = (filename) => {
@@ -65,15 +68,30 @@ const Chat = () => {
   };
 
   const uploadMedia = async (file) => {
-    const storageRef = ref(storage, `chat-media/${file.name}`);
-    try {
-      await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(storageRef);
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
 
-      console.log("url", url);
-      return url;
-    } catch (error) {
-      console.error("Error uplading file");
+    if (currentUser) {
+      console.log("Authenticated user", currentUser.email);
+      setUploading(true);
+
+      try {
+        const filename = new Date().getTime + "_" + file.name;
+        const storageRef = ref(storage, `chat-media/${filename}`);
+
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        console.log("url", url);
+        setUploading(false);
+        return url;
+      } catch (error) {
+        console.error("Error uplading file");
+        return null;
+      }
+    } else {
+      console.log("User not authenticated");
+      setUploading(false); 
       return null;
     }
   };
@@ -203,15 +221,16 @@ const Chat = () => {
                     const fileExt = getFileExtension(url);
                     return (
                       <div key={index}>
-                        {["jpg", "jpeg", "png"].includes(fileExt) ? (
+                        {["jpg", "jpeg", "png","webp"].includes(fileExt) ? (
                           <img
                             src={url}
                             alt="Media"
                             className="max-w-full rounded-lg"
                           />
                         ) : ["mp4", "mov"].includes(fileExt) ? (
-                          <video controls className="max-w-full rounded-lg">
-                            <source src={url} type={`video/${fileExt}`} />
+
+                          <video controls autoplay muted className="max-w-full rounded-lg">
+                            <source src={url} type={"video/mp4"} />
                             Your browser does not support the video tag.
                           </video>
                         ) : (
@@ -261,6 +280,11 @@ const Chat = () => {
             </div>
           ))}
         </div>
+      )}
+      {uploading && (
+        <div className="absolute top-0 left-0 right-0 bottom-0 bg-opacity-50 bg-gray-700 flex justify-center items-center text-white z-10">
+          Sending...
+         </div>
       )}
 
       <div className="flex items-center mt-4 justify-center">
