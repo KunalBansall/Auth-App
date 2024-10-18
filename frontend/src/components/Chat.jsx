@@ -11,7 +11,7 @@ import {
 } from "firebase/storage";
 import { getFirestore, collection, getDocs } from "firebase/firestore"; // Firebase Firestore
 import { FaPaperclip, FaTimesCircle } from "react-icons/fa"; // Add FontAwesome icons
-import { getAuth } from "firebase/auth";
+import { getAuth,onAuthStateChanged } from "firebase/auth";
 
 const API_URL = "https://auth-app-main-4bam.onrender.com";
 // const API_URL = "http://localhost:5000";
@@ -41,6 +41,16 @@ const Chat = () => {
     return filename.split(".").pop().split(/\#|\?/)[0];
   };
 
+  useEffect(() => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("User is authenticated", user);
+      } else {
+        console.log("User is not authenticated");
+      }
+    });
+  }, []); 
   useEffect(() => {
     const fetchMessages = async () => {
       const querySnapshot = await getDocs(

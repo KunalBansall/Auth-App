@@ -7,6 +7,7 @@ import SignInWithGoogle from "../components/SigninWithGoogle";
 import { useAuth } from "../context/AuthContext";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
+import firebase from "firebase/compat/app";
 
 const API_URL = "https://auth-app-main-4bam.onrender.com/auth";
 // const API_URL = "http://localhost:5000/auth";
@@ -27,16 +28,9 @@ function Signin() {
       const res = await axios.post(`${API_URL}/sign-in`, formData);
 
       if (res.data.token && res.data.user) {
-        signInWithEmailAndPassword(auth, formData.email, formData.password)
-          .then(function (firebaseUser) {
-            console.log(firebaseUser);
-          })
-          .catch(function (error) {
-            // Error handling
-            if (error.code !== "auth/invalid-credential") {
-              console.error("Error signing in:", error.message);
-            }
-          });
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
+        await signInWithEmailAndPassword(auth, formData.email, formData.password);
       }
 
       login(res.data.token, res.data.user);
