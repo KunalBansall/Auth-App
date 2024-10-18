@@ -45,9 +45,8 @@ exports.signIn = async (req, res) => {
     expiresIn: "1h",
   });
 
-  const {password :pass , ...rest}= user._doc;
-  res.json({ token ,user:rest});;
-  
+  const { password: pass, ...rest } = user._doc;
+  res.json({ token, user: rest });
 };
 
 exports.googleSignIn = async (req, res) => {
@@ -61,7 +60,7 @@ exports.googleSignIn = async (req, res) => {
       });
 
       const { password: pass, ...rest } = user._doc;
-     return res.status(200).json({ token, user:rest });
+      return res.status(200).json({ token, user: rest });
     } else {
       const generatePassword =
         Math.random().toString(36).slice(-8) +
@@ -79,25 +78,8 @@ exports.googleSignIn = async (req, res) => {
         expiresIn: "1h",
       });
       const { password: pass, ...rest } = newUser._doc;
-     return res.status(200).json({ token, user:rest });
+      return res.status(200).json({ token, user: rest });
     }
-
-    // if (!user) {
-    //   user = new User({
-    //     username,
-    //     email: email.toLowerCase(),
-    //     avatar,
-    //     isGoogleSignin:true,
-    //   });
-
-    //   await user.save();
-    // }
-
-    // const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-    //   expiresIn: "1h",
-    // });
-
-    // return res.status(200).json({ token, user });
   } catch (error) {
     console.error("Error during Google Sign-in", error);
     return res.status(500).json({ message: "Server Error" });

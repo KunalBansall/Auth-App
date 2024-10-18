@@ -5,8 +5,10 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import SignInWithGoogle from "../components/SigninWithGoogle";
 import { useAuth } from "../context/AuthContext";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 
-const API_URL = "https://auth-app-main-4bam.onrender.com/auth" ;
+const API_URL = "https://auth-app-main-4bam.onrender.com/auth";
 // const API_URL = "http://localhost:5000/auth";
 
 function Signin() {
@@ -23,10 +25,21 @@ function Signin() {
     e.preventDefault();
     try {
       const res = await axios.post(`${API_URL}/sign-in`, formData);
-      // localStorage.setItem("token", res.data.token);
-      // sessionStorage.setItem("user", res.data);
-      login(res.data.token,res.data.user);
-      // console.log("res", res.data);
+
+      if (res.data.token && res.data.user) {
+        signInWithEmailAndPassword(auth, formData.email, formData.password)
+          .then(function (firebaseUser) {
+            console.log(firebaseUser);
+          })
+          .catch(function (error) {
+            // Error handling
+            if (error.code !== "auth/invalid-credential") {
+              console.error("Error signing in:", error.message);
+            }
+          });
+      }
+
+      login(res.data.token, res.data.user);
 
       //Toast on Success
       toast.success("Login Success", {
@@ -64,11 +77,7 @@ function Signin() {
     }
   };
 
-
-  
   return (
-    
-    
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
         <h1 className="text-3xl font-bold text-white text-center mb-6">

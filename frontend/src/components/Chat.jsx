@@ -3,8 +3,13 @@ import io from "socket.io-client";
 import { useAuth } from "../context/AuthContext";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore"; // Firebase Firestore
+import {
+  ref,
+  getDownloadURL,
+  getStorage,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { getFirestore, collection, getDocs } from "firebase/firestore"; // Firebase Firestore
 import { FaPaperclip, FaTimesCircle } from "react-icons/fa"; // Add FontAwesome icons
 import { getAuth } from "firebase/auth";
 
@@ -28,11 +33,11 @@ const Chat = () => {
   const [chatUser, setChatUser] = useState(null);
   const chatWindowRef = useRef(null);
   const [media, setMedia] = useState([]); // storing media
-  const [uploading, setUploading] = useState(false); // track upload status
-
+  const [uploading, setUploading] = useState(false);
   const storage = getStorage();
-
+  const [filePerc, setFilePerc] = useState(0);
   const getFileExtension = (filename) => {
+    if (!filename) return "";
     return filename.split(".").pop().split(/\#|\?/)[0];
   };
 
@@ -70,31 +75,40 @@ const Chat = () => {
   const uploadMedia = async (file) => {
     const auth = getAuth();
     const currentUser = auth.currentUser;
-
     if (currentUser) {
-      console.log("Authenticated user", currentUser.email);
       setUploading(true);
+      const filename = new Date().getTime() + "_" + file.name;
+      const storageRef = ref(storage, `chat-media/${filename}`);
+      const uploadTask = uploadBytesResumable(storageRef, file);
 
-      try {
-        const filename = new Date().getTime + "_" + file.name;
-        const storageRef = ref(storage, `chat-media/${filename}`);
-
-        await uploadBytes(storageRef, file);
-        const url = await getDownloadURL(storageRef);
-
-        console.log("url", url);
-        setUploading(false);
-        return url;
-      } catch (error) {
-        console.error("Error uplading file");
-        return null;
-      }
+      return new Promise((resolve, reject) => {
+        uploadTask.on(
+          "state_changed",
+          (snapshot) => {
+            const progress =
+              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            setFilePerc(Math.round(progress));
+          },
+          (error) => reject(error),
+          async () => {
+            try {
+              const url = await getDownloadURL(uploadTask.snapshot.ref);
+              setUploading(false);
+              resolve(url);
+            } catch (err) {
+              reject(err);
+              setUploading(false);
+            }
+          }
+        );
+      });
     } else {
-      console.log("User not authenticated");
-      setUploading(false); 
+      console.error("User not authenticated");
+      setUploading(false);
       return null;
     }
   };
+
   useEffect(() => {
     if (!isAuthenticated || !user || !user._id) {
       return;
@@ -135,16 +149,17 @@ const Chat = () => {
 
   const sendMessage = async () => {
     if (!user || !userId) return;
+    if (!message.trim() && !media.length) return;
 
     const chatroomId = getChatroomId(user._id, userId); // Generate chatroom ID
     let mediaUrls = [];
     if (media.length) {
-      for (let file of media) {
-        const url = await uploadMedia(file);
-        if (url) mediaUrls.push(url);
+      try {
+        mediaUrls = await Promise.all(media.map(uploadMedia));
+        // console.log("media url", mediaUrls);
+      } catch (error) {
+        console.error("Error uploading media Files", error);
       }
-      // mediaUrl = await uploadMedia(media);
-      console.log("media url", mediaUrls);
     }
     const msg = {
       chatroomId,
@@ -154,7 +169,6 @@ const Chat = () => {
       mediaUrls,
       createdAt: new Date(),
     };
-    console.log("mesgge", msg);
 
     socket.emit("sendMessage", msg, (ack) => {
       if (ack.status === "success") {
@@ -178,8 +192,8 @@ const Chat = () => {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white p-4">
-      <div className="text-gray-700 mb-4 sticky top-0 z-10 bg-white p-2">
+    <div className="flex flex-col h-screen bg-yellow-200 p-4">
+      <div className="text-gray-700 mb-4 sticky top-0 z-10 bg-purple-700 p-2">
         {chatUser ? `Chatting with: ${chatUser.username}` : "Loading..."}
       </div>
       <div
@@ -202,7 +216,7 @@ const Chat = () => {
               />
             )}
             <div
-              className={`p-3 rounded-lg max-w-[70%] ${
+              className={`p-1 rounded-lg max-w-[80%] sm:max-w-[70%] md:max-w-[60%] lg:max-w-[50%] xl:max-w-[40%] ${
                 msg.sender === user._id
                   ? "bg-blue-900 text-white"
                   : "bg-gray-200 text-black"
@@ -221,15 +235,18 @@ const Chat = () => {
                     const fileExt = getFileExtension(url);
                     return (
                       <div key={index}>
-                        {["jpg", "jpeg", "png","webp"].includes(fileExt) ? (
+                        {["jpg", "jpeg", "png", "webp"].includes(fileExt) ? (
                           <img
                             src={url}
                             alt="Media"
                             className="max-w-full rounded-lg"
                           />
                         ) : ["mp4", "mov"].includes(fileExt) ? (
-
-                          <video controls autoplay muted className="max-w-full rounded-lg">
+                          <video
+                            controls
+                            muted
+                            className="max-w-full rounded-lg"
+                          >
                             <source src={url} type={"video/mp4"} />
                             Your browser does not support the video tag.
                           </video>
@@ -283,8 +300,8 @@ const Chat = () => {
       )}
       {uploading && (
         <div className="absolute top-0 left-0 right-0 bottom-0 bg-opacity-50 bg-gray-700 flex justify-center items-center text-white z-10">
-          Sending...
-         </div>
+          Sending...{filePerc}%
+        </div>
       )}
 
       <div className="flex items-center mt-4 justify-center">

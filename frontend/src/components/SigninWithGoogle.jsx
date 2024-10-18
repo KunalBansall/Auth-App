@@ -21,7 +21,6 @@ const SignInWithGoogle = () => {
       if (user) {
         // Get the user's token and store it
         const token = await user.getIdToken();
-        // console.log("Token retrieved from user:", token); // Check if token is correct
 
         const email = user.email;
         const username = user.displayName;

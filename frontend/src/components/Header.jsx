@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import Chat from "./Chat"; // Import the Chat component
 
 export default function Header() {
   const navigate = useNavigate();
@@ -42,7 +41,7 @@ export default function Header() {
         {/* Left - App Name */}
         <Link to="/">
           <h1 className="font-bold text-white bg-slate-600 rounded-lg p-2 hover:underline outline">
-            CHIT-CHAT
+            AmigoChat💬
           </h1>
         </Link>
 
